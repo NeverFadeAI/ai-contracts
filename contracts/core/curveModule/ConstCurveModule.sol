@@ -7,7 +7,6 @@ import {Errors} from "../../libraries/Errors.sol";
 
 struct ConstCurveData {
     uint256 price;
-    uint256 timePeriod;
     uint256 supply;
     uint256 referralRatio;
 }
@@ -34,15 +33,14 @@ contract ConstCurveModule is ModuleBase, ICurveModule {
         uint256 itemIndex,
         bytes calldata data
     ) external override onlyNeverFadeHub returns (uint256) {
-        (uint256 price, uint256 timePeriod, uint256 referralRatio) = abi.decode(
+        (uint256 price, uint256 referralRatio) = abi.decode(
             data,
-            (uint256, uint256, uint256)
+            (uint256, uint256)
         );
         if (referralRatio > 10000) revert Errors.ReferralRatioTooHigh();
 
         _dataConstCurveByItemAddress[itemIndex] = ConstCurveData(
             price,
-            timePeriod,
             0,
             referralRatio
         );
@@ -85,11 +83,6 @@ contract ConstCurveModule is ModuleBase, ICurveModule {
         returns (uint256, uint256, uint256)
     {
         revert Errors.ConstCurveCannotSell();
-    }
-
-    /// @inheritdoc ICurveModule
-    function processTransfer() external pure override returns (bool) {
-        return false;
     }
 
     /// @inheritdoc ICurveModule
@@ -148,13 +141,6 @@ contract ConstCurveModule is ModuleBase, ICurveModule {
             1,
             _dataConstCurveByItemAddress[itemIndex].referralRatio
         );
-    }
-
-    /// @inheritdoc ICurveModule
-    function getTimePeriodFromCurve(
-        uint256 itemIndex
-    ) external view returns (uint256) {
-        return _dataConstCurveByItemAddress[itemIndex].timePeriod;
     }
 
     /// @inheritdoc ICurveModule

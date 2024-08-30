@@ -100,11 +100,6 @@ contract QuadraticCurveModule is ModuleBase, ICurveModule {
     }
 
     /// @inheritdoc ICurveModule
-    function processTransfer() external pure override returns (bool) {
-        return true;
-    }
-
-    /// @inheritdoc ICurveModule
     function setReferralRatio(
         uint256 itemIndex,
         uint256 newReferralRatio
@@ -217,11 +212,6 @@ contract QuadraticCurveModule is ModuleBase, ICurveModule {
             _dataQuadraticCurveByItemAddress[itemIndex].multiplier,
             _dataQuadraticCurveByItemAddress[itemIndex].referralRatio
         );
-    }
-
-    /// @inheritdoc ICurveModule
-    function getTimePeriodFromCurve(uint256) external pure returns (uint256) {
-        return 0;
     }
 
     /// @inheritdoc ICurveModule

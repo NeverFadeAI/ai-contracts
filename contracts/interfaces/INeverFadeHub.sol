@@ -70,7 +70,11 @@ interface INeverFadeHub {
      *      curveModuleInitData: The curve module initialization data, if any.
      */
     function initializeItemByGov(
-        DataTypes.InitialItemDataByGov calldata vars
+        DataTypes.InitialItemData calldata vars
+    ) external;
+
+    function initializeItemByUser(
+        DataTypes.InitialItemData calldata vars
     ) external;
 
     /// ***********************
@@ -200,18 +204,5 @@ interface INeverFadeHub {
     function getSellPriceAfterFee(
         uint256 itemIndex,
         uint256 amount
-    ) external view returns (uint256);
-
-    /**
-     * @notice get timePeriod from const curve,
-     * Const curve is subscription model, buy one key have timePeriod
-     * Frontend can calculate the expiration time for each subscriber
-     *
-     * @param curveAddress address of curve
-     * @param itemIndex the index of item
-     */
-    function getTimePeriodFromCurve(
-        address curveAddress,
-        uint256 itemIndex
     ) external view returns (uint256);
 }

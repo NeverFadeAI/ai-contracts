@@ -21,6 +21,11 @@ contract NerverFadeHub is
         _;
     }
 
+    modifier whenOpenForUser() {
+        if (!_bOpenForUser) revert Errors.InitializeItemForUserNotOpen();
+        _;
+    }
+
     /// @inheritdoc INeverFadeHub
     function initialize(
         address governanceContractAddress,
@@ -81,7 +86,7 @@ contract NerverFadeHub is
 
     /// @inheritdoc INeverFadeHub
     function initializeItemByGov(
-        DataTypes.InitialItemDataByGov calldata vars
+        DataTypes.InitialItemData calldata vars
     ) external override onlyGov {
         if (!_curveModuleWhitelisted[vars.curveModule])
             revert Errors.CurveModuleNotWhitelisted();
@@ -94,9 +99,31 @@ contract NerverFadeHub is
         );
     }
 
+    function adminPause() external onlyGov {
+        _pause();
+    }
+
+    function adminUnpause() external onlyGov {
+        _unpause();
+    }
+
     /// ****************************
     /// *****EXTERNAL FUNCTIONS***
     /// ****************************
+
+    function initializeItemByUser(
+        DataTypes.InitialItemData calldata vars
+    ) external override whenOpenForUser {
+        if (!_curveModuleWhitelisted[vars.curveModule])
+            revert Errors.CurveModuleNotWhitelisted();
+
+        uint256 currentItemIndex = _globalItemIndex++;
+        _keyItemInfo[currentItemIndex].curveModule = vars.curveModule;
+        ICurveModule(vars.curveModule).initializeCurveModule(
+            currentItemIndex,
+            vars.curveModuleInitData
+        );
+    }
 
     /// @inheritdoc INeverFadeHub
     function buyItem(
@@ -182,11 +209,6 @@ contract NerverFadeHub is
             revert Errors.ItemNotInitialized();
         if (_keyItemInfo[vars.itemIndex].balanceOf[msg.sender] < vars.amount)
             revert Errors.InsufficientItemAmount();
-
-        bool canTransfer = ICurveModule(
-            _keyItemInfo[vars.itemIndex].curveModule
-        ).processTransfer();
-        if (!canTransfer) revert Errors.TransferNotSupport();
 
         _keyItemInfo[vars.itemIndex].balanceOf[msg.sender] -= vars.amount;
         _keyItemInfo[vars.itemIndex].balanceOf[vars.to] += vars.amount;
@@ -310,18 +332,6 @@ contract NerverFadeHub is
             revert Errors.ItemNotInitialized();
         }
         return ICurveModule(curve).getSellPriceAfterFee(itemIndex, amount);
-    }
-
-    /// @inheritdoc INeverFadeHub
-    function getTimePeriodFromCurve(
-        address curveAddress,
-        uint256 itemIndex
-    ) external view returns (uint256) {
-        //only work for const curve
-        if (ICurveModule(curveAddress).getCurveType() != 8) {
-            return 0;
-        }
-        return ICurveModule(curveAddress).getTimePeriodFromCurve(itemIndex);
     }
 
     /// ****************************

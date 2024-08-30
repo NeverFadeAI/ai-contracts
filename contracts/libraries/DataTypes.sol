@@ -16,7 +16,7 @@ library DataTypes {
         ConstCurve
     }
 
-    struct InitialItemDataByGov {
+    struct InitialItemData {
         address curveModule;
         bytes curveModuleInitData;
     }

@@ -44,11 +44,6 @@ interface ICurveModule {
     ) external returns (uint256, uint256, uint256);
 
     /**
-     * @notice return if key can transfer or not.
-     */
-    function processTransfer() external pure returns (bool);
-
-    /**
      * @notice change referral ratio.
      *
      * @param itemIndex index of item
@@ -108,17 +103,6 @@ interface ICurveModule {
     function getItemConfig(
         uint256 itemIndex
     ) external view returns (uint256, uint256, uint256);
-
-    /**
-     * @notice get timePeriod for const curve,
-     * Const curve is subscription model, buy one key have timePeriod
-     * Frontend can calculate the expiration time for each subscriber
-     *
-     * @param itemIndex index of item
-     */
-    function getTimePeriodFromCurve(
-        uint256 itemIndex
-    ) external view returns (uint256);
 
     /**
      * @notice get the price of sell amount key
