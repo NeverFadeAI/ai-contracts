@@ -1,0 +1,30 @@
+node_modules
+.env
+coverage
+coverage.json
+typechain
+typechain-types
+deployments
+
+# Hardhat files
+cache
+artifacts
+docs/elin
+docs/libraries
+docs/mocks
+docs/upgradeablity
+node_modules
+.env
+coverage
+coverage.json
+typechain
+typechain-types
+package-lock.json
+
+# Hardhat files
+cache
+artifacts
+
+addresses.json
+
+.idea
