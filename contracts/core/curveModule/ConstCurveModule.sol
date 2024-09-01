@@ -21,11 +21,11 @@ contract ConstCurveModule is ModuleBase, ICurveModule {
     mapping(uint256 => ConstCurveData) internal _dataConstCurveByItemAddress;
 
     uint256 _protocolFeePercent;
-    uint256 _subjectFeePercent;
+    uint256 _itemFeePercent;
 
     constructor(address neverFadeHub) ModuleBase(neverFadeHub) {
         _protocolFeePercent = 2000; //20%
-        _subjectFeePercent = 8000; //80%
+        _itemFeePercent = 8000; //80%
     }
 
     /// @inheritdoc ICurveModule
@@ -59,14 +59,11 @@ contract ConstCurveModule is ModuleBase, ICurveModule {
     {
         _dataConstCurveByItemAddress[itemIndex].supply += amount;
 
-        uint256 retProtoFeePercent = _protocolFeePercent;
-        uint256 retItemFeePercent = _subjectFeePercent;
-
         return (
             _dataConstCurveByItemAddress[itemIndex].price * amount,
             _dataConstCurveByItemAddress[itemIndex].referralRatio,
-            retProtoFeePercent,
-            retItemFeePercent,
+            _protocolFeePercent,
+            _itemFeePercent,
             true
         );
     }
@@ -108,12 +105,12 @@ contract ConstCurveModule is ModuleBase, ICurveModule {
         uint256 newItemFeePercent
     ) external override onlyNeverFadeHub {
         _protocolFeePercent = newProtocolFeePercent;
-        _subjectFeePercent = newItemFeePercent;
+        _itemFeePercent = newItemFeePercent;
     }
 
     /// @inheritdoc ICurveModule
     function getFeePercent() external view override returns (uint256, uint256) {
-        return (_protocolFeePercent, _subjectFeePercent);
+        return (_protocolFeePercent, _itemFeePercent);
     }
 
     /// @inheritdoc ICurveModule

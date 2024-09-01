@@ -23,11 +23,11 @@ contract LinearCurveModule is ModuleBase, ICurveModule {
     mapping(uint256 => LinearCurveData) internal _dataLinearCurveByItemAddress;
 
     uint256 _protocolFeePercent;
-    uint256 _subjectFeePercent;
+    uint256 _itemFeePercent;
 
     constructor(address neverFadeHub) ModuleBase(neverFadeHub) {
         _protocolFeePercent = 500; //5%
-        _subjectFeePercent = 500; //5%
+        _itemFeePercent = 500; //5%
     }
 
     /// @inheritdoc ICurveModule
@@ -68,14 +68,12 @@ contract LinearCurveModule is ModuleBase, ICurveModule {
         _dataLinearCurveByItemAddress[itemIndex].supply += amount;
 
         //check if have customized fee percent
-        uint256 retProtoFeePercent = _protocolFeePercent;
-        uint256 retItemFeePercent = _subjectFeePercent;
 
         return (
             price,
             _dataLinearCurveByItemAddress[itemIndex].referralRatio,
-            retProtoFeePercent,
-            retItemFeePercent,
+            _protocolFeePercent,
+            _itemFeePercent,
             false
         );
     }
@@ -93,10 +91,7 @@ contract LinearCurveModule is ModuleBase, ICurveModule {
         );
         _dataLinearCurveByItemAddress[itemIndex].supply -= amount;
 
-        uint256 retProtoFeePercent = _protocolFeePercent;
-        uint256 retItemFeePercent = _subjectFeePercent;
-
-        return (price, retProtoFeePercent, retItemFeePercent);
+        return (price, _protocolFeePercent, _itemFeePercent);
     }
 
     /// @inheritdoc ICurveModule
@@ -122,12 +117,12 @@ contract LinearCurveModule is ModuleBase, ICurveModule {
         uint256 newItemFeePercent
     ) external override onlyNeverFadeHub {
         _protocolFeePercent = newProtocolFeePercent;
-        _subjectFeePercent = newItemFeePercent;
+        _itemFeePercent = newItemFeePercent;
     }
 
     /// @inheritdoc ICurveModule
     function getFeePercent() external view override returns (uint256, uint256) {
-        return (_protocolFeePercent, _subjectFeePercent);
+        return (_protocolFeePercent, _itemFeePercent);
     }
 
     /// @inheritdoc ICurveModule
@@ -157,7 +152,7 @@ contract LinearCurveModule is ModuleBase, ICurveModule {
         );
 
         uint256 retProtoFeePercent = _protocolFeePercent;
-        uint256 retItemFeePercent = _subjectFeePercent;
+        uint256 retItemFeePercent = _itemFeePercent;
 
         return
             price +
@@ -195,7 +190,7 @@ contract LinearCurveModule is ModuleBase, ICurveModule {
         );
 
         uint256 retProtoFeePercent = _protocolFeePercent;
-        uint256 retItemFeePercent = _subjectFeePercent;
+        uint256 retItemFeePercent = _itemFeePercent;
 
         return
             price -

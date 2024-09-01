@@ -58,24 +58,24 @@ contract NeverFadeHub is
     function setCurveFeePercent(
         address curveModuleAddress,
         uint256 newProtocolFeePercent,
-        uint256 newReferralFeePercent
+        uint256 newItemFeePercent
     ) external override onlyGov {
         if (!_curveModuleWhitelisted[curveModuleAddress])
             revert Errors.CurveModuleNotWhitelisted();
 
         //if change const curve fee percentage. The sum must be 10000
         if (ICurveModule(curveModuleAddress).getCurveType() == 8) {
-            if (newProtocolFeePercent + newReferralFeePercent != BPS_MAX)
+            if (newProtocolFeePercent + newItemFeePercent != BPS_MAX)
                 revert Errors.InvalidFeePercent();
         } else {
             //revert if the sum more than 10% when not const curve
-            if (newProtocolFeePercent + newReferralFeePercent > 1000)
+            if (newProtocolFeePercent + newItemFeePercent > 1000)
                 revert Errors.InvalidFeePercent();
         }
 
         ICurveModule(curveModuleAddress).setFeePercent(
             newProtocolFeePercent,
-            newReferralFeePercent
+            newItemFeePercent
         );
     }
 
