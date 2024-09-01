@@ -51,17 +51,16 @@ interface INeverFadeHub {
      *
      * @param curveModuleAddress address of curve contract
      * @param newProtocolFeePercent new percentage of protocol
-     * @param newItemFeePercent new percentage of item
+     * @param newReferralFeePercent new percentage of referral
      */
     function setCurveFeePercent(
         address curveModuleAddress,
         uint256 newProtocolFeePercent,
-        uint256 newItemFeePercent
+        uint256 newReferralFeePercent
     ) external;
 
     /**
-     * @notice help user to initialize item, sometime kol not have gas, just not initialized user
-     * and the supply == 0
+     * @notice initialize item
      *
      * @param vars A InitialItemDataByGov struct containing the following params:
      *      keyItem: The address of item
@@ -70,10 +69,6 @@ interface INeverFadeHub {
      *      curveModuleInitData: The curve module initialization data, if any.
      */
     function initializeItemByGov(
-        DataTypes.InitialItemData calldata vars
-    ) external;
-
-    function initializeItemByUser(
         DataTypes.InitialItemData calldata vars
     ) external;
 
@@ -116,7 +111,7 @@ interface INeverFadeHub {
      * @notice change referral ratio.
      *
      * @param itemIndex The index of item
-     * @param newReferralRatio The new referra ratio
+     * @param newReferralRatio The new referral ratio
      */
     function setReferralRatio(
         uint256 itemIndex,

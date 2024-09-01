@@ -9,7 +9,7 @@ import {DataTypes} from "../libraries/DataTypes.sol";
 import {Errors} from "../libraries/Errors.sol";
 import {Events} from "../libraries/Events.sol";
 
-contract NerverFadeHub is
+contract NeverFadeHub is
     PausableUpgradeable,
     INeverFadeHub,
     NeverFadeHubStorage
@@ -18,11 +18,6 @@ contract NerverFadeHub is
 
     modifier onlyGov() {
         _validateCallerIsGovernance();
-        _;
-    }
-
-    modifier whenOpenForUser() {
-        if (!_bOpenForUser) revert Errors.InitializeItemForUserNotOpen();
         _;
     }
 
@@ -63,24 +58,24 @@ contract NerverFadeHub is
     function setCurveFeePercent(
         address curveModuleAddress,
         uint256 newProtocolFeePercent,
-        uint256 newItemFeePercent
+        uint256 newReferralFeePercent
     ) external override onlyGov {
         if (!_curveModuleWhitelisted[curveModuleAddress])
             revert Errors.CurveModuleNotWhitelisted();
 
         //if change const curve fee percentage. The sum must be 10000
         if (ICurveModule(curveModuleAddress).getCurveType() == 8) {
-            if (newProtocolFeePercent + newItemFeePercent != BPS_MAX)
+            if (newProtocolFeePercent + newReferralFeePercent != BPS_MAX)
                 revert Errors.InvalidFeePercent();
         } else {
             //revert if the sum more than 10% when not const curve
-            if (newProtocolFeePercent + newItemFeePercent > 1000)
+            if (newProtocolFeePercent + newReferralFeePercent > 1000)
                 revert Errors.InvalidFeePercent();
         }
 
         ICurveModule(curveModuleAddress).setFeePercent(
             newProtocolFeePercent,
-            newItemFeePercent
+            newReferralFeePercent
         );
     }
 
@@ -105,24 +100,6 @@ contract NerverFadeHub is
 
     function adminUnpause() external onlyGov {
         _unpause();
-    }
-
-    /// ****************************
-    /// *****EXTERNAL FUNCTIONS***
-    /// ****************************
-
-    function initializeItemByUser(
-        DataTypes.InitialItemData calldata vars
-    ) external override whenOpenForUser {
-        if (!_curveModuleWhitelisted[vars.curveModule])
-            revert Errors.CurveModuleNotWhitelisted();
-
-        uint256 currentItemIndex = _globalItemIndex++;
-        _keyItemInfo[currentItemIndex].curveModule = vars.curveModule;
-        ICurveModule(vars.curveModule).initializeCurveModule(
-            currentItemIndex,
-            vars.curveModuleInitData
-        );
     }
 
     /// @inheritdoc INeverFadeHub
