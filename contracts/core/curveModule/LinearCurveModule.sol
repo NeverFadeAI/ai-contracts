@@ -26,8 +26,8 @@ contract LinearCurveModule is ModuleBase, ICurveModule {
     uint256 _itemFeePercent;
 
     constructor(address neverFadeHub) ModuleBase(neverFadeHub) {
-        _protocolFeePercent = 500; //5%
-        _itemFeePercent = 500; //5%
+        _protocolFeePercent = 200; //2%
+        _itemFeePercent = 300; //3%
     }
 
     /// @inheritdoc ICurveModule

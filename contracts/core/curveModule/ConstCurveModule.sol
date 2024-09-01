@@ -24,8 +24,8 @@ contract ConstCurveModule is ModuleBase, ICurveModule {
     uint256 _itemFeePercent;
 
     constructor(address neverFadeHub) ModuleBase(neverFadeHub) {
-        _protocolFeePercent = 2000; //20%
-        _itemFeePercent = 8000; //80%
+        _protocolFeePercent = 4000; //40%
+        _itemFeePercent = 6000; //60%
     }
 
     /// @inheritdoc ICurveModule
