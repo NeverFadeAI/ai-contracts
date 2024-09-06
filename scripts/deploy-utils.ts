@@ -66,7 +66,6 @@ export const deployAndVerifyAndThen = async ({
   hre,
   name,
   args,
-  from,
   contract,
   iface,
   postDeployAction,
@@ -74,17 +73,16 @@ export const deployAndVerifyAndThen = async ({
   hre: any
   name: string
   args: any[]
-  from: string
   contract?: string
   iface?: string
   postDeployAction?: (contract: Contract) => Promise<void>
 }) => {
   const { deploy } = hre.deployments
-  //const { deployer } = await hre.getNamedAccounts()
+  const { deployer } = await hre.getNamedAccounts()
 
   const result = await deploy(name, {
     contract,
-    from: from,
+    from: deployer,
     args,
     log: true,
     waitConfirmations: 1,
@@ -121,7 +119,7 @@ export const deployAndVerifyAndThen = async ({
     //   }
     // }
     if (postDeployAction) {
-      const signer = hre.ethers.provider.getSigner(from)
+      const signer = hre.ethers.provider.getSigner(deployer)
       let abi = result.abi
       if (iface !== undefined) {
         const factory = await hre.ethers.getContractFactory(iface)

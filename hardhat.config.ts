@@ -1,5 +1,6 @@
 import { HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
+import "@openzeppelin/hardhat-upgrades";
 import * as dotenv from 'dotenv'
 import 'hardhat-deploy'
 dotenv.config()
@@ -8,6 +9,7 @@ const deployer = process.env.DEPLOY_PRIVATE_KEY || '0x' + '11'.repeat(32)
 const governance = process.env.GOVERNANCE_PRIVATE_KEY || '0x' + '11'.repeat(32)
 const TESTNET_BLOCK_EXPLORER_KEY = process.env.TESTNET_BLOCK_EXPLORER_KEY || '';
 const MAINNET_BLOCK_EXPLORER_KEY = process.env.MAINNET_BLOCK_EXPLORER_KEY || '';
+const BASE_BLOCK_EXPLORER_KEY = process.env.BASE_BLOCK_EXPLORER_KEY || '';
 
 const config: HardhatUserConfig = {
   solidity: {
@@ -44,6 +46,16 @@ const config: HardhatUserConfig = {
       gasPrice: 2000000000,
       gas: 2000000,
     },
+    baseMain: {
+      chainId: 8453,
+      url: process.env.BASE_MAIN_RPC_URL || '',
+      accounts: [deployer, governance],
+    },
+    baseSepolia: {
+      chainId: 84532,
+      url: process.env.BASE_TEST_RPC_URL || '',
+      accounts: [deployer, governance],
+    },
   },
   paths: {
     deploy: './deploy',
@@ -55,15 +67,14 @@ const config: HardhatUserConfig = {
     },
     governance: {
       default: 1,
-    },
-    tomosign: {
-      default: 2,
     }
   },
   etherscan: {
     apiKey: {
       linea_testnet: TESTNET_BLOCK_EXPLORER_KEY,
-      linea_mainnet: MAINNET_BLOCK_EXPLORER_KEY
+      linea_mainnet: MAINNET_BLOCK_EXPLORER_KEY,
+      baseSepolia: BASE_BLOCK_EXPLORER_KEY,
+      baseMainnet: BASE_BLOCK_EXPLORER_KEY,
     },
     customChains: [
       {
@@ -82,6 +93,22 @@ const config: HardhatUserConfig = {
           browserURL: "https://lineascan.build/"
         }
       },
+      {
+        network: "baseMainnet",
+        chainId: 8453,
+        urls: {
+         apiURL: "https://api.basescan.org/api",
+         browserURL: "https://basescan.org"
+        }
+      },
+      {
+        network: "baseSepolia",
+        chainId: 84532,
+        urls: {
+         apiURL: "https://api-sepolia.basescan.org/api",
+         browserURL: "https://sepolia.basescan.org/"
+        }
+      }
     ]
   },
 };
