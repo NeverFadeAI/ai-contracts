@@ -24,6 +24,7 @@ contract LinearCurveModule is ModuleBase, ICurveModule {
 
     uint256 _protocolFeePercent;
     uint256 _itemFeePercent;
+    bool _canTransfer;
 
     constructor(address neverFadeHub) ModuleBase(neverFadeHub) {
         _protocolFeePercent = 200; //2%
@@ -92,6 +93,18 @@ contract LinearCurveModule is ModuleBase, ICurveModule {
         _dataLinearCurveByItemAddress[itemIndex].supply -= amount;
 
         return (price, _protocolFeePercent, _itemFeePercent);
+    }
+
+    /// @inheritdoc ICurveModule
+    function processTransfer() external view override returns (bool) {
+        return _canTransfer;
+    }
+
+    /// @inheritdoc ICurveModule
+    function setTransferable(
+        bool transferable_
+    ) external override onlyNeverFadeHub {
+        _canTransfer = transferable_;
     }
 
     /// @inheritdoc ICurveModule

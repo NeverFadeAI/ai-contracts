@@ -22,4 +22,5 @@ library Errors {
     error InvalidFeePercent(); //8a81d3b3
     error SendETHFailed(); //56761812
     error InitializeItemForUserNotOpen(); //b1b3b1b3
+    error TransferNotSupport();
 }

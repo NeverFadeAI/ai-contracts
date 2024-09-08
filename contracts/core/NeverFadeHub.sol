@@ -79,6 +79,15 @@ contract NeverFadeHub is
         );
     }
 
+    function setCurveTransferable(
+        address curveModuleAddress,
+        bool transferable
+    ) external override onlyGov {
+        if (!_curveModuleWhitelisted[curveModuleAddress])
+            revert Errors.CurveModuleNotWhitelisted();
+        ICurveModule(curveModuleAddress).setTransferable(transferable);
+    }
+
     /// @inheritdoc INeverFadeHub
     function initializeItemByGov(
         DataTypes.InitialItemData calldata vars
@@ -88,6 +97,7 @@ contract NeverFadeHub is
 
         uint256 currentItemIndex = _globalItemIndex++;
         _keyItemInfo[currentItemIndex].curveModule = vars.curveModule;
+        _keyItemInfo[currentItemIndex].creator = msg.sender;
         ICurveModule(vars.curveModule).initializeCurveModule(
             currentItemIndex,
             vars.curveModuleInitData
@@ -187,6 +197,11 @@ contract NeverFadeHub is
         if (_keyItemInfo[vars.itemIndex].balanceOf[msg.sender] < vars.amount)
             revert Errors.InsufficientItemAmount();
 
+        bool canTransfer = ICurveModule(
+            _keyItemInfo[vars.itemIndex].curveModule
+        ).processTransfer();
+        if (!canTransfer) revert Errors.TransferNotSupport();
+
         _keyItemInfo[vars.itemIndex].balanceOf[msg.sender] -= vars.amount;
         _keyItemInfo[vars.itemIndex].balanceOf[vars.to] += vars.amount;
         emit Events.TransferItemSuccess(
@@ -209,7 +224,7 @@ contract NeverFadeHub is
     ) external override {
         if (_keyItemInfo[itemIndex].curveModule == address(0))
             revert Errors.ItemNotInitialized();
-        if (_keyItemInfo[itemIndex].creator == msg.sender)
+        if (_keyItemInfo[itemIndex].creator != msg.sender)
             revert Errors.NotItemOwner();
 
         if (newReferralRatio > BPS_MAX) revert Errors.ReferralRatioTooHigh();
@@ -226,7 +241,7 @@ contract NeverFadeHub is
     ) external override {
         if (_keyItemInfo[itemIndex].curveModule == address(0))
             revert Errors.ItemNotInitialized();
-        if (_keyItemInfo[itemIndex].creator == msg.sender)
+        if (_keyItemInfo[itemIndex].creator != msg.sender)
             revert Errors.NotItemOwner();
 
         ICurveModule(_keyItemInfo[itemIndex].curveModule).setItemPrice(

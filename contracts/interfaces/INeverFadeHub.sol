@@ -59,6 +59,11 @@ interface INeverFadeHub {
         uint256 newReferralFeePercent
     ) external;
 
+    function setCurveTransferable(
+        address curveModuleAddress,
+        bool transferable
+    ) external;
+
     /**
      * @notice initialize item
      *

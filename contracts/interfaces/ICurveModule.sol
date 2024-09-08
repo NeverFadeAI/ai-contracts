@@ -44,6 +44,13 @@ interface ICurveModule {
     ) external returns (uint256, uint256, uint256);
 
     /**
+     * @notice return if item can transfer or not.
+     */
+    function processTransfer() external view returns (bool);
+
+    function setTransferable(bool transferable_) external;
+
+    /**
      * @notice change referral ratio.
      *
      * @param itemIndex index of item

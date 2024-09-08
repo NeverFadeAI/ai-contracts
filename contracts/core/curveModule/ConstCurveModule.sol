@@ -22,6 +22,7 @@ contract ConstCurveModule is ModuleBase, ICurveModule {
 
     uint256 _protocolFeePercent;
     uint256 _itemFeePercent;
+    bool _canTransfer;
 
     constructor(address neverFadeHub) ModuleBase(neverFadeHub) {
         _protocolFeePercent = 4000; //40%
@@ -80,6 +81,18 @@ contract ConstCurveModule is ModuleBase, ICurveModule {
         returns (uint256, uint256, uint256)
     {
         revert Errors.ConstCurveCannotSell();
+    }
+
+    /// @inheritdoc ICurveModule
+    function processTransfer() external view override returns (bool) {
+        return _canTransfer;
+    }
+
+    /// @inheritdoc ICurveModule
+    function setTransferable(
+        bool transferable_
+    ) external override onlyNeverFadeHub {
+        _canTransfer = transferable_;
     }
 
     /// @inheritdoc ICurveModule
