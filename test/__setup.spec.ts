@@ -10,14 +10,14 @@ import {
   QuadraticCurveModule__factory,
   Donation__factory,
   Donation,
+  NeverFadeHub__factory,
+  NeverFadeHub,
 } from '../typechain-types';
 import {
   revertToSnapshot,
   takeSnapshot,
 } from './helpers/utils';
 import { ERRORS } from './helpers/errors';
-import { NeverFadeHub } from '../typechain-types/contracts/core/NeverFadeHub.sol';
-import { NeverFadeHub__factory } from '../typechain-types/factories/contracts/core/NeverFadeHub.sol';
 
 export let accounts: Signer[];
 export let deployer: Signer;
@@ -41,6 +41,9 @@ export let constCurveModuleAddress: string;
 export let linearCurveModuleAddress: string;
 export let bondCurveModuleAddress: string;
 export let abiCoder: AbiCoder;
+
+export let buyAmount = 5;
+export let buyAmount1 = 2;
 
 export function makeSuiteCleanRoom(name: string, tests: () => void) {
   describe(name, () => {

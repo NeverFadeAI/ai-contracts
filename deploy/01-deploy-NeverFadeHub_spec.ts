@@ -1,9 +1,6 @@
 /* Imports: Internal */
 import { DeployFunction } from 'hardhat-deploy/dist/types'
 import { ethers, upgrades } from 'hardhat';
-import {
-  getContractFromArtifact
-} from '../scripts/deploy-utils'
 
 const deployFn: DeployFunction = async (hre) => {
   const [ deployer ] = await ethers.getSigners();

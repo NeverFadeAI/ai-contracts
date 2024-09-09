@@ -174,13 +174,10 @@ contract LinearCurveModule is ModuleBase, ICurveModule {
             amount
         );
 
-        uint256 retProtoFeePercent = _protocolFeePercent;
-        uint256 retItemFeePercent = _itemFeePercent;
-
         return
             price +
-            ((price * retProtoFeePercent) / 10000) +
-            ((price * retItemFeePercent) / 10000);
+            ((price * _protocolFeePercent) / 10000) +
+            ((price * _itemFeePercent) / 10000);
     }
 
     /// @inheritdoc ICurveModule
@@ -212,13 +209,10 @@ contract LinearCurveModule is ModuleBase, ICurveModule {
             amount
         );
 
-        uint256 retProtoFeePercent = _protocolFeePercent;
-        uint256 retItemFeePercent = _itemFeePercent;
-
         return
             price -
-            ((price * retProtoFeePercent) / 10000) -
-            ((price * retItemFeePercent) / 10000);
+            ((price * _protocolFeePercent) / 10000) -
+            ((price * _itemFeePercent) / 10000);
     }
 
     /// @inheritdoc ICurveModule

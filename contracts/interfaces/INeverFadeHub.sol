@@ -86,9 +86,9 @@ interface INeverFadeHub {
      *
      * @param vars A BuyItemDataBeforeOpenCurve struct containing the following params:
      *      keyItem: The address of item
-     *      referralAddress: The address of referral user, if any
      *      amount: buy amount
      *      maxAcceptedPrice: The max price user can accept
+     *      referralAddress: The address of referral user, if any
      */
     function buyItem(DataTypes.BuyItemData calldata vars) external payable;
 

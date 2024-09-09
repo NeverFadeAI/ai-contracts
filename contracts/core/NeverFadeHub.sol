@@ -119,7 +119,6 @@ contract NeverFadeHub is
         if (vars.amount == 0) revert Errors.InvalidAmount();
         if (_keyItemInfo[vars.itemIndex].curveModule == address(0))
             revert Errors.ItemNotInitialized();
-
         _buyItem(
             vars.itemIndex,
             vars.referralAddress,

@@ -37,7 +37,7 @@ makeSuiteCleanRoom('Initialize Item', function () {
                 })).to.be.revertedWithCustomError(neverFadeHub, ERRORS.CurveModuleNotWhitelisted);
             });
 
-            it('User should fail to initialize item if use invalid initial data format.',   async function () {
+            it('User should fail to initialize constant item if use invalid initial data format.',   async function () {
                 await expect(neverFadeHub.connect(governance).initializeItemByGov({
                     curveModule:  constCurveModuleAddress,
                     curveModuleInitData: abiCoder.encode(['uint256', 'bool'], [1000, true]), 
@@ -70,6 +70,20 @@ makeSuiteCleanRoom('Initialize Item', function () {
                     curveModule:  bondCurveModuleAddress,
                     curveModuleInitData: abiCoder.encode(['uint256', 'uint256', 'uint256'], [1000, 1000, 10001]), 
                 })).to.be.revertedWithCustomError(bondCurveModule, ERRORS.ReferralRatioTooHigh);
+            });
+
+            it('User should fail to linear item if use invalid initial data format.',   async function () {
+                await expect(neverFadeHub.connect(governance).initializeItemByGov({
+                    curveModule:  linearCurveModuleAddress,
+                    curveModuleInitData: abiCoder.encode(['uint256', 'uint256', 'bool'], [1000, 1000, true]), 
+                })).to.be.revertedWithoutReason;
+            });
+
+            it('User should fail to bondCurve item if use invalid initial data format.',   async function () {
+                await expect(neverFadeHub.connect(governance).initializeItemByGov({
+                    curveModule:  bondCurveModuleAddress,
+                    curveModuleInitData: abiCoder.encode(['uint256', 'uint256', 'bool'], [1000, 1000, true]), 
+                })).to.be.revertedWithoutReason;
             });
 
             it('User should fail to initialize item if remove const curve from whitelist.',   async function () {

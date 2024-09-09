@@ -2,7 +2,6 @@
 import { DeployFunction } from 'hardhat-deploy/dist/types'
 import {
   deployAndVerifyAndThen,
-  getContractFromArtifact
 } from '../scripts/deploy-utils';
 
 const deployFn: DeployFunction = async (hre) => {
