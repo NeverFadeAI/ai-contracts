@@ -83,7 +83,12 @@ contract LinearCurveModule is ModuleBase, ICurveModule {
     function processSell(
         uint256 itemIndex,
         uint256 amount
-    ) external override onlyNeverFadeHub returns (uint256, uint256, uint256) {
+    )
+        external
+        override
+        onlyNeverFadeHub
+        returns (uint256, uint256, uint256, uint256)
+    {
         uint256 price = _getPrice(
             _dataLinearCurveByItemAddress[itemIndex].startPrice,
             _dataLinearCurveByItemAddress[itemIndex].multiplier,
@@ -92,7 +97,12 @@ contract LinearCurveModule is ModuleBase, ICurveModule {
         );
         _dataLinearCurveByItemAddress[itemIndex].supply -= amount;
 
-        return (price, _protocolFeePercent, _itemFeePercent);
+        return (
+            price,
+            _protocolFeePercent,
+            _itemFeePercent,
+            _dataLinearCurveByItemAddress[itemIndex].referralRatio
+        );
     }
 
     /// @inheritdoc ICurveModule

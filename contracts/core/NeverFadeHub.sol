@@ -143,7 +143,8 @@ contract NeverFadeHub is
         (
             uint256 price,
             uint256 protocolFeePercent,
-            uint256 subjectFeePercent
+            uint256 subjectFeePercent,
+            uint256 referralRatio
         ) = ICurveModule(_keyItemInfo[vars.itemIndex].curveModule).processSell(
                 vars.itemIndex,
                 vars.amount
@@ -155,30 +156,42 @@ contract NeverFadeHub is
         _keyItemInfo[vars.itemIndex].supply -= vars.amount;
         _keyItemInfo[vars.itemIndex].balanceOf[msg.sender] -= vars.amount;
 
-        uint256 protocolFee = (price * protocolFeePercent) / BPS_MAX;
-        (bool success, ) = _protocolFeeAddress.call{value: protocolFee}("");
-        if (!success) {
-            revert Errors.SendETHFailed();
-        }
+        {
+            uint256 protocolFee = (price * protocolFeePercent) / BPS_MAX;
+            (bool success, ) = _protocolFeeAddress.call{value: protocolFee}("");
+            if (!success) {
+                revert Errors.SendETHFailed();
+            }
+            uint256 subjectFee = (price * subjectFeePercent) / BPS_MAX;
+            uint256 referralFee = 0;
+            if (vars.referralAddress != address(0) && referralRatio != 0) {
+                referralFee = (subjectFee * referralRatio) / BPS_MAX;
+                (bool suc, ) = vars.referralAddress.call{value: referralFee}(
+                    ""
+                );
+                if (!suc) {
+                    revert Errors.SendETHFailed();
+                }
+            }
 
-        uint256 subjectFee = (price * subjectFeePercent) / BPS_MAX;
-        (bool success1, ) = _keyItemInfo[vars.itemIndex].creator.call{
-            value: subjectFee
-        }("");
-        if (!success1) {
-            revert Errors.SendETHFailed();
-        }
+            (bool success1, ) = _keyItemInfo[vars.itemIndex].creator.call{
+                value: subjectFee - referralFee
+            }("");
+            if (!success1) {
+                revert Errors.SendETHFailed();
+            }
 
-        uint256 sellValue = price - protocolFee - subjectFee;
-        (bool success2, ) = vars.receiver.call{value: sellValue}("");
-        if (!success2) {
-            revert Errors.SendETHFailed();
+            uint256 sellValue = price - protocolFee - subjectFee;
+            (bool success2, ) = vars.receiver.call{value: sellValue}("");
+            if (!success2) {
+                revert Errors.SendETHFailed();
+            }
         }
         _emitTradeItemEvent(
             msg.sender,
             vars.receiver,
             vars.itemIndex,
-            address(0),
+            vars.referralAddress,
             vars.amount,
             price,
             false

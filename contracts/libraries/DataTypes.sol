@@ -30,16 +30,17 @@ library DataTypes {
 
     struct BuyItemData {
         uint256 itemIndex;
-        address referralAddress;
         uint256 amount;
         uint256 maxAcceptedPrice;
+        address referralAddress;
     }
 
     struct SellItemData {
         uint256 itemIndex;
-        address receiver;
         uint256 amount;
         uint256 minAcceptedPrice;
+        address referralAddress;
+        address receiver;
     }
 
     struct TransferItemData {

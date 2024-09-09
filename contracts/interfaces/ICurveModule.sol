@@ -41,7 +41,7 @@ interface ICurveModule {
     function processSell(
         uint256 itemIndex,
         uint256 amount
-    ) external returns (uint256, uint256, uint256);
+    ) external returns (uint256, uint256, uint256, uint256);
 
     /**
      * @notice return if item can transfer or not.

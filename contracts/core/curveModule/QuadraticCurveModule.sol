@@ -81,7 +81,12 @@ contract QuadraticCurveModule is ModuleBase, ICurveModule {
     function processSell(
         uint256 itemIndex,
         uint256 amount
-    ) external override onlyNeverFadeHub returns (uint256, uint256, uint256) {
+    )
+        external
+        override
+        onlyNeverFadeHub
+        returns (uint256, uint256, uint256, uint256)
+    {
         uint256 price = _getPrice(
             _dataQuadraticCurveByItemAddress[itemIndex].startPrice,
             _dataQuadraticCurveByItemAddress[itemIndex].multiplier,
@@ -90,7 +95,12 @@ contract QuadraticCurveModule is ModuleBase, ICurveModule {
         );
         _dataQuadraticCurveByItemAddress[itemIndex].supply -= amount;
 
-        return (price, _protocolFeePercent, _itemFeePercent);
+        return (
+            price,
+            _protocolFeePercent,
+            _itemFeePercent,
+            _dataQuadraticCurveByItemAddress[itemIndex].referralRatio
+        );
     }
 
     /// @inheritdoc ICurveModule

@@ -78,7 +78,7 @@ contract ConstCurveModule is ModuleBase, ICurveModule {
         view
         override
         onlyNeverFadeHub
-        returns (uint256, uint256, uint256)
+        returns (uint256, uint256, uint256, uint256)
     {
         revert Errors.ConstCurveCannotSell();
     }
