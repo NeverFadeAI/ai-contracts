@@ -91,7 +91,7 @@ contract NeverFadeHub is
     /// @inheritdoc INeverFadeHub
     function initializeItemByGov(
         DataTypes.InitialItemData calldata vars
-    ) external override onlyGov {
+    ) external override whenNotPaused onlyGov {
         if (!_curveModuleWhitelisted[vars.curveModule])
             revert Errors.CurveModuleNotWhitelisted();
 

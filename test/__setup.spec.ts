@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { Signer } from 'ethers';
+import { AbiCoder, Signer } from 'ethers';
 import { ethers, upgrades } from 'hardhat';
 import {
   LinearCurveModule,
@@ -37,6 +37,10 @@ export let linearCurveModule: LinearCurveModule;
 export let bondCurveModule: QuadraticCurveModule;
 export let donation: Donation;
 export let neverFadeHub: NeverFadeHub;
+export let constCurveModuleAddress: string;
+export let linearCurveModuleAddress: string;
+export let bondCurveModuleAddress: string;
+export let abiCoder: AbiCoder;
 
 export function makeSuiteCleanRoom(name: string, tests: () => void) {
   describe(name, () => {
@@ -51,6 +55,7 @@ export function makeSuiteCleanRoom(name: string, tests: () => void) {
 }
 
 before(async function () {
+  abiCoder = ethers.AbiCoder.defaultAbiCoder();
   accounts = await ethers.getSigners();
   deployer = accounts[0];
   governance = accounts[1];
@@ -85,9 +90,9 @@ before(async function () {
   await expect(neverFadeHub.connect(governance).setGovernance(userAddress)).to.not.be.reverted;
   await expect(neverFadeHub.connect(user).setGovernance(governanceAddress)).to.not.be.reverted;
 
-  const constCurveModuleAddress = await constCurveModule.getAddress();
-  const linearCurveModuleAddress = await linearCurveModule.getAddress();
-  const bondCurveModuleAddress = await bondCurveModule.getAddress();
+  constCurveModuleAddress = await constCurveModule.getAddress();
+  linearCurveModuleAddress = await linearCurveModule.getAddress();
+  bondCurveModuleAddress = await bondCurveModule.getAddress();
 
   await expect(neverFadeHub.connect(governance).whitelistCurveModule(constCurveModuleAddress,true)).to.not.be.reverted;
   await expect(neverFadeHub.connect(governance).whitelistCurveModule(linearCurveModuleAddress,true)).to.not.be.reverted;
@@ -95,15 +100,15 @@ before(async function () {
   await expect(neverFadeHub.connect(governance).setCurveFeePercent(constCurveModuleAddress, 2000, 8000)).to.not.be.reverted;
   await expect(neverFadeHub.connect(governance).setCurveFeePercent(bondCurveModuleAddress, 200, 800)).to.not.be.reverted;
 
-  await expect(neverFadeHub.connect(governance).setCurveFeePercent(deployerAddress, 11000, 9000)).to.be.revertedWithCustomError(neverFadeHub, ERRORS.CURVEMODULE_NOT_WHITELISTED);
+  await expect(neverFadeHub.connect(governance).setCurveFeePercent(deployerAddress, 11000, 9000)).to.be.revertedWithCustomError(neverFadeHub, ERRORS.CurveModuleNotWhitelisted);
   await expect(neverFadeHub.connect(governance).setCurveFeePercent(constCurveModuleAddress, 1000, 8500)).to.be.revertedWithCustomError(neverFadeHub, ERRORS.INVALID_FEE_PERCENT);
   await expect(neverFadeHub.connect(governance).setCurveFeePercent(bondCurveModuleAddress, 900, 101)).to.be.revertedWithCustomError(neverFadeHub, ERRORS.INVALID_FEE_PERCENT);
   //change back to 5% 5%
   await expect(neverFadeHub.connect(governance).setCurveFeePercent(bondCurveModuleAddress, 500, 500)).to.not.be.reverted;
 
-  await expect(neverFadeHub.connect(user).setGovernance(userAddress)).to.be.revertedWithCustomError(neverFadeHub, ERRORS.NOT_GOVERNANCE);
-  await expect(neverFadeHub.connect(user).whitelistCurveModule(bondCurveModuleAddress,true)).to.be.revertedWithCustomError(neverFadeHub, ERRORS.NOT_GOVERNANCE);
-  await expect(neverFadeHub.connect(user).setCurveFeePercent(constCurveModuleAddress, 1000, 9000)).to.be.revertedWithCustomError(neverFadeHub, ERRORS.NOT_GOVERNANCE);
+  await expect(neverFadeHub.connect(user).setGovernance(userAddress)).to.be.revertedWithCustomError(neverFadeHub, ERRORS.NotGovernance);
+  await expect(neverFadeHub.connect(user).whitelistCurveModule(bondCurveModuleAddress,true)).to.be.revertedWithCustomError(neverFadeHub, ERRORS.NotGovernance);
+  await expect(neverFadeHub.connect(user).setCurveFeePercent(constCurveModuleAddress, 1000, 9000)).to.be.revertedWithCustomError(neverFadeHub, ERRORS.NotGovernance);
 
   expect(neverFadeHub).to.not.be.undefined;
 });
