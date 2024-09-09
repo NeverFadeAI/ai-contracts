@@ -1,0 +1,25 @@
+export const ERRORS = {
+    PAUSED: 'Paused',
+    NOT_GOVERNANCE: 'NotGovernance',
+    CURVEMODULE_NOT_WHITELISTED: 'CurveModuleNotWhitelisted',
+    FEE_PERCENT_TOO_HIGH: 'FeePercentTooHigh',
+    REFERRAL_RATIO_TOO_HIGH: 'ReferralRatioTooHigh',
+    SUBJECT_ALREADY_INITIALIZED: 'SubjectAlreadyInitialized',
+    SUBJECT_NOT_INITIALIZED: 'SubjectNotInitialized',
+    SIGNATURE_INVALID: 'SignatureInvalid',
+    MSGVALUE_NOT_ENOUGH: 'MsgValueNotEnough',
+    EXCEED_MAX_ACCEPTED_PRICE: 'ExceedMaxAcceptedPrice',
+    NOT_ALLOW_BOT_TRADE: 'NotAllowBotTrade',
+    INSUFFICIENT_KEY_AMOUNT: 'InsufficientKeyAmount',
+    CONST_CURVE_CANNOT_SELL: 'ConstCurveCannotSell',
+    LESS_THAN_MIN_ACCEPTED_PRICE: 'LessThanMinAcceptedPrice',
+    CANNOT_BE_ZERO_ADDRESS: 'CanNotBeZeroAddress',
+    INITIALIZE_SUBJECT_PAUSED: 'InitializeSubjectPaused',
+    INVALID_AMOUNT: 'InvalidAmount',
+    INVALID_TO_ADDRESS: 'InvalidToAddress',
+    TRANSFER_NOT_SUPPORT: 'TransferNotSupport',
+    INITIALIZED: 'Initialized',
+    INVALID_FEE_PERCENT: 'InvalidFeePercent',
+    OwnableUnauthorizedAccount: 'OwnableUnauthorizedAccount'
+  };
+  
