@@ -1,12 +1,9 @@
 import { expect } from 'chai';
 import {
     makeSuiteCleanRoom,
-    user,
-    userAddress,
     userTwo,
     userTwoAddress,
     neverFadeHub,
-    deployerAddress,
     abiCoder,
     constCurveModule,
     bondCurveModule,
@@ -97,7 +94,7 @@ makeSuiteCleanRoom('Buy Item', function () {
                     amount: buyAmount,
                     maxAcceptedPrice: price - BigInt(100000),
                     referralAddress: userThreeAddress,
-                },{value: price})).to.be.revertedWithCustomError(neverFadeHub, ERRORS.EXCEED_MAX_ACCEPTED_PRICE);
+                },{value: price})).to.be.revertedWithCustomError(neverFadeHub, ERRORS.ExceedMaxAcceptedPrice);
             });
 
             it('User should fail to buy item by buyStandardKey if amount = 0.',   async function () {

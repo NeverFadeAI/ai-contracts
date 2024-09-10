@@ -43,7 +43,7 @@ export let bondCurveModuleAddress: string;
 export let abiCoder: AbiCoder;
 
 export let buyAmount = 5;
-export let buyAmount1 = 2;
+export let sellAmount = 2;
 
 export function makeSuiteCleanRoom(name: string, tests: () => void) {
   describe(name, () => {
@@ -104,8 +104,8 @@ before(async function () {
   await expect(neverFadeHub.connect(governance).setCurveFeePercent(bondCurveModuleAddress, 200, 800)).to.not.be.reverted;
 
   await expect(neverFadeHub.connect(governance).setCurveFeePercent(deployerAddress, 11000, 9000)).to.be.revertedWithCustomError(neverFadeHub, ERRORS.CurveModuleNotWhitelisted);
-  await expect(neverFadeHub.connect(governance).setCurveFeePercent(constCurveModuleAddress, 1000, 8500)).to.be.revertedWithCustomError(neverFadeHub, ERRORS.INVALID_FEE_PERCENT);
-  await expect(neverFadeHub.connect(governance).setCurveFeePercent(bondCurveModuleAddress, 900, 101)).to.be.revertedWithCustomError(neverFadeHub, ERRORS.INVALID_FEE_PERCENT);
+  await expect(neverFadeHub.connect(governance).setCurveFeePercent(constCurveModuleAddress, 1000, 8500)).to.be.revertedWithCustomError(neverFadeHub, ERRORS.InvalidFeePercent);
+  await expect(neverFadeHub.connect(governance).setCurveFeePercent(bondCurveModuleAddress, 900, 101)).to.be.revertedWithCustomError(neverFadeHub, ERRORS.InvalidFeePercent);
   //change back to 5% 5%
   await expect(neverFadeHub.connect(governance).setCurveFeePercent(bondCurveModuleAddress, 500, 500)).to.not.be.reverted;
 
