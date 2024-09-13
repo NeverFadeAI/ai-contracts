@@ -16,6 +16,6 @@ const deployFn: DeployFunction = async (hre) => {
 }
 
 // This is kept during an upgrade. So no upgrade tag.
-deployFn.tags = ['DeployStakePlanHub']
+deployFn.tags = ['DeployNeverFadeHub']
 
 export default deployFn
