@@ -17,6 +17,7 @@ import {
     buyAmount,
     feeProtocolAddress,
     governanceAddress,
+    neverFadePointsAddress,
 } from '../__setup.spec';
 import { ERRORS } from '../helpers/errors';
 import { ethers } from 'hardhat';
@@ -37,8 +38,8 @@ makeSuiteCleanRoom('Buy Item', function () {
             
             const config = await constCurveModule.connect(governance).getItemConfig(0);
             expect(config[0]).to.equal(startPrice)
-            expect(config[1]).to.equal(1)
-            expect(config[2]).to.equal(1000)
+            expect(config[1]).to.equal(0)
+            expect(config[3]).to.equal(1000)
 
             await expect(neverFadeHub.connect(governance).initializeItemByGov({
                 curveModule:  linearCurveModuleAddress,
@@ -115,9 +116,9 @@ makeSuiteCleanRoom('Buy Item', function () {
                 const config = await constCurveModule.connect(userTwo).getItemConfig(0);
                 const feePercentage = feeStr[0];
                 const itemPercentage = feeStr[1];
-                const referralPercentage = config[2];
+                const referralPercentage = config[3];
 
-                const creatorBeforeBalance = await ethers.provider.getBalance(governanceAddress);
+                const neverFadePointsBeforeBalance = await ethers.provider.getBalance(neverFadePointsAddress);
                 const userTwoBeforeBalance = await ethers.provider.getBalance(userTwoAddress);
                 const userThreeBeforeBalance = await ethers.provider.getBalance(userThreeAddress);
                 const feeAddressBeforeBalance = await ethers.provider.getBalance(feeProtocolAddress);
@@ -131,7 +132,7 @@ makeSuiteCleanRoom('Buy Item', function () {
                 const txReceipt = await txResp.wait();
                 const gasEth = txReceipt!.fee;
 
-                const creatorAfterBalance = await ethers.provider.getBalance(governanceAddress);
+                const neverFadePointsAfterBalance = await ethers.provider.getBalance(neverFadePointsAddress);
                 const userTwoAfterBalance = await ethers.provider.getBalance(userTwoAddress);
                 const userThreeAfterBalance = await ethers.provider.getBalance(userThreeAddress);
                 const feeAddressAfterBalance = await ethers.provider.getBalance(feeProtocolAddress);
@@ -142,7 +143,7 @@ makeSuiteCleanRoom('Buy Item', function () {
                 const subjectFee = leftFee - referralFee;
 
                 expect((userTwoBeforeBalance - gasEth - price)).to.equal(userTwoAfterBalance);
-                expect((creatorBeforeBalance + subjectFee)).to.equal(creatorAfterBalance);
+                expect((neverFadePointsBeforeBalance + subjectFee)).to.equal(neverFadePointsAfterBalance);
                 expect((userThreeBeforeBalance + referralFee)).to.equal(userThreeAfterBalance);
                 expect((feeAddressBeforeBalance + protocolFee)).to.equal(feeAddressAfterBalance);
 
@@ -156,11 +157,11 @@ makeSuiteCleanRoom('Buy Item', function () {
                 const config = await linearCurveModule.connect(userTwo).getItemConfig(1);
                 const feePercentage = feeStr[0];
                 const itemPercentage = feeStr[1];
-                const referralPercentage = config[2];
+                const referralPercentage = config[3];
 
                 const price = keyPrice + (keyPrice * feePercentage / BigInt(10000)) + (keyPrice * itemPercentage / BigInt(10000));
 
-                const creatorBeforeBalance = await ethers.provider.getBalance(governanceAddress);
+                const neverFadePointsBeforeBalance = await ethers.provider.getBalance(neverFadePointsAddress);
                 const userTwoBeforeBalance = await ethers.provider.getBalance(userTwoAddress);
                 const userThreeBeforeBalance = await ethers.provider.getBalance(userThreeAddress);
                 const feeAddressBeforeBalance = await ethers.provider.getBalance(feeProtocolAddress);
@@ -174,7 +175,7 @@ makeSuiteCleanRoom('Buy Item', function () {
 
                 const txReceipt = await txResp.wait();
                 const gasEth =  txReceipt!.fee;
-                const creatorAfterBalance = await ethers.provider.getBalance(governanceAddress);
+                const neverFadePointsAfterBalance = await ethers.provider.getBalance(neverFadePointsAddress);
                 const userTwoAfterBalance = await ethers.provider.getBalance(userTwoAddress);
                 const userThreeAfterBalance = await ethers.provider.getBalance(userThreeAddress);
                 const feeAddressAfterBalance = await ethers.provider.getBalance(feeProtocolAddress);
@@ -185,7 +186,7 @@ makeSuiteCleanRoom('Buy Item', function () {
                 const subjectFee = leftFee - referralFee;
 
                 expect((userThreeBeforeBalance - gasEth - price)).to.equal(userThreeAfterBalance);
-                expect((creatorBeforeBalance + subjectFee)).to.equal(creatorAfterBalance);
+                expect((neverFadePointsBeforeBalance + subjectFee)).to.equal(neverFadePointsAfterBalance);
                 expect((userTwoBeforeBalance + referralFee)).to.equal(userTwoAfterBalance);
                 expect((feeAddressBeforeBalance + protocolFee)).to.equal(feeAddressAfterBalance);
                 
@@ -199,11 +200,11 @@ makeSuiteCleanRoom('Buy Item', function () {
                 const config = await bondCurveModule.connect(userTwo).getItemConfig(2);
                 const feePercentage = feeStr[0];
                 const itemPercentage = feeStr[1];
-                const referralPercentage = config[2];
+                const referralPercentage = config[3];
 
                 const price = keyPrice + (keyPrice * feePercentage / BigInt(10000)) + (keyPrice * itemPercentage / BigInt(10000));
 
-                const creatorBeforeBalance = await ethers.provider.getBalance(governanceAddress);
+                const neverFadePointsBeforeBalance = await ethers.provider.getBalance(neverFadePointsAddress);
                 const userTwoBeforeBalance = await ethers.provider.getBalance(userTwoAddress);
                 const userThreeBeforeBalance = await ethers.provider.getBalance(userThreeAddress);
                 const feeAddressBeforeBalance = await ethers.provider.getBalance(feeProtocolAddress);
@@ -218,7 +219,7 @@ makeSuiteCleanRoom('Buy Item', function () {
                 const txReceipt = await txResp.wait();
                 const gasEth =  txReceipt!.fee;
 
-                const creatorAfterBalance = await ethers.provider.getBalance(governanceAddress);
+                const neverFadePointsAfterBalance = await ethers.provider.getBalance(neverFadePointsAddress);
                 const userTwoAfterBalance = await ethers.provider.getBalance(userTwoAddress);
                 const userThreeAfterBalance = await ethers.provider.getBalance(userThreeAddress);
                 const feeAddressAfterBalance = await ethers.provider.getBalance(feeProtocolAddress);
@@ -229,7 +230,7 @@ makeSuiteCleanRoom('Buy Item', function () {
                 const subjectFee = leftFee - referralFee;
 
                 expect((userThreeBeforeBalance - gasEth - price)).to.equal(userThreeAfterBalance);
-                expect((creatorBeforeBalance + subjectFee)).to.equal(creatorAfterBalance);
+                expect((neverFadePointsBeforeBalance + subjectFee)).to.equal(neverFadePointsAfterBalance);
                 expect((userTwoBeforeBalance + referralFee)).to.equal(userTwoAfterBalance);
                 expect((feeAddressBeforeBalance + protocolFee)).to.equal(feeAddressAfterBalance);
 

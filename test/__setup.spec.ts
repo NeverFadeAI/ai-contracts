@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { AbiCoder, Signer } from 'ethers';
+import { AbiCoder, Signer, getCreateAddress } from 'ethers';
 import { ethers, upgrades } from 'hardhat';
 import {
   LinearCurveModule,
@@ -12,6 +12,8 @@ import {
   Donation,
   NeverFadeHub__factory,
   NeverFadeHub,
+  NeverFadePoints__factory,
+  NeverFadePoints,
 } from '../typechain-types';
 import {
   revertToSnapshot,
@@ -32,11 +34,13 @@ export let userAddress: string;
 export let userTwoAddress: string;
 export let userThreeAddress: string;
 export let feeProtocolAddress: string;
+export let neverFadePoints: NeverFadePoints;
 export let constCurveModule: ConstCurveModule;
 export let linearCurveModule: LinearCurveModule;
 export let bondCurveModule: QuadraticCurveModule;
 export let donation: Donation;
 export let neverFadeHub: NeverFadeHub;
+export let neverFadePointsAddress: string;
 export let constCurveModuleAddress: string;
 export let linearCurveModuleAddress: string;
 export let bondCurveModuleAddress: string;
@@ -77,12 +81,18 @@ before(async function () {
   donation = await new Donation__factory(deployer).deploy(deployerAddress);
   expect(donation).to.not.be.undefined;
 
+  let deployerNonce = await ethers.provider.getTransactionCount(deployer);
+  neverFadePointsAddress = getCreateAddress({ from: deployerAddress, nonce: deployerNonce + 2 })
   const NeverFadeHub = await ethers.getContractFactory("NeverFadeHub");
-  const neverFadeHubProxy = await upgrades.deployProxy(NeverFadeHub, [governanceAddress, feeProtocolAddress]);
+  const neverFadeHubProxy = await upgrades.deployProxy(NeverFadeHub, [governanceAddress, feeProtocolAddress, neverFadePointsAddress]);
+
   const proxyAddress = await neverFadeHubProxy.getAddress()
   console.log("proxy address: ", proxyAddress)
   console.log("admin address: ", await upgrades.erc1967.getAdminAddress(proxyAddress))
   console.log("implement address: ", await upgrades.erc1967.getImplementationAddress(proxyAddress))
+
+  const v3NonfungiblePositionManagerAddress = "0x27F971cb582BF9E50F397e4d29a5C7A34f11faA2"
+  neverFadePoints = await new NeverFadePoints__factory(deployer).deploy("NeverFadePoints", "NFP", proxyAddress, v3NonfungiblePositionManagerAddress, deployerAddress);
 
   constCurveModule = await new ConstCurveModule__factory(deployer).deploy(proxyAddress);
   linearCurveModule = await new LinearCurveModule__factory(deployer).deploy(proxyAddress);
@@ -93,13 +103,12 @@ before(async function () {
   await expect(neverFadeHub.connect(governance).setGovernance(userAddress)).to.not.be.reverted;
   await expect(neverFadeHub.connect(user).setGovernance(governanceAddress)).to.not.be.reverted;
 
+  neverFadePointsAddress = await neverFadePoints.getAddress();
   constCurveModuleAddress = await constCurveModule.getAddress();
   linearCurveModuleAddress = await linearCurveModule.getAddress();
   bondCurveModuleAddress = await bondCurveModule.getAddress();
 
-  await expect(neverFadeHub.connect(governance).whitelistCurveModule(constCurveModuleAddress,true)).to.not.be.reverted;
-  await expect(neverFadeHub.connect(governance).whitelistCurveModule(linearCurveModuleAddress,true)).to.not.be.reverted;
-  await expect(neverFadeHub.connect(governance).whitelistCurveModule(bondCurveModuleAddress,true)).to.not.be.reverted;
+  await expect(neverFadeHub.connect(governance).whitelistCurveModule([constCurveModuleAddress,linearCurveModuleAddress,bondCurveModuleAddress],true)).to.not.be.reverted;
   await expect(neverFadeHub.connect(governance).setCurveFeePercent(constCurveModuleAddress, 2000, 8000)).to.not.be.reverted;
   await expect(neverFadeHub.connect(governance).setCurveFeePercent(bondCurveModuleAddress, 200, 800)).to.not.be.reverted;
 
@@ -110,7 +119,7 @@ before(async function () {
   await expect(neverFadeHub.connect(governance).setCurveFeePercent(bondCurveModuleAddress, 500, 500)).to.not.be.reverted;
 
   await expect(neverFadeHub.connect(user).setGovernance(userAddress)).to.be.revertedWithCustomError(neverFadeHub, ERRORS.NotGovernance);
-  await expect(neverFadeHub.connect(user).whitelistCurveModule(bondCurveModuleAddress,true)).to.be.revertedWithCustomError(neverFadeHub, ERRORS.NotGovernance);
+  await expect(neverFadeHub.connect(user).whitelistCurveModule([bondCurveModuleAddress],true)).to.be.revertedWithCustomError(neverFadeHub, ERRORS.NotGovernance);
   await expect(neverFadeHub.connect(user).setCurveFeePercent(constCurveModuleAddress, 1000, 9000)).to.be.revertedWithCustomError(neverFadeHub, ERRORS.NotGovernance);
 
   expect(neverFadeHub).to.not.be.undefined;

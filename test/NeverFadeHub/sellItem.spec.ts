@@ -20,6 +20,7 @@ import {
     feeProtocolAddress,
     sellAmount,
     governanceAddress,
+    neverFadePointsAddress,
 } from '../__setup.spec';
 import { ERRORS } from '../helpers/errors';
 import { ethers } from 'hardhat';
@@ -166,7 +167,7 @@ makeSuiteCleanRoom('Sell Item', function () {
 
             it('Get correct variable if sell linear curve Item success.',   async function () {
                 
-                const creatorBeforeBalance = await ethers.provider.getBalance(governanceAddress);
+                const neverFadePointsBeforeBalance = await ethers.provider.getBalance(neverFadePointsAddress);
                 const userTwoBeforeBalance = await ethers.provider.getBalance(userTwoAddress);
                 const userThreeBeforeBalance = await ethers.provider.getBalance(userThreeAddress);
                 const feeAddressBeforeBalance = await ethers.provider.getBalance(feeProtocolAddress);
@@ -185,13 +186,13 @@ makeSuiteCleanRoom('Sell Item', function () {
                 const userTwoAfterBalance = await ethers.provider.getBalance(userTwoAddress);
                 const userThreeAfterBalance = await ethers.provider.getBalance(userThreeAddress);
                 const feeAddressAfterBalance = await ethers.provider.getBalance(feeProtocolAddress);
-                const creatorAfterBalance = await ethers.provider.getBalance(governanceAddress);
+                const neverFadePointsAfterBalance = await ethers.provider.getBalance(neverFadePointsAddress);
 
                 const feeStr = await linearCurveModule.connect(userThree).getFeePercent();
                 const config = await linearCurveModule.connect(userThree).getItemConfig(1);
                 const feePercentage = feeStr[0];
                 const itemPercentage = feeStr[1];
-                const referralPercentage = config[2];
+                const referralPercentage = config[3];
                 
                 const protocolFee = price * feePercentage / BigInt(10000);
                 const leftFee = price * itemPercentage / BigInt(10000);
@@ -199,7 +200,7 @@ makeSuiteCleanRoom('Sell Item', function () {
                 const subjectFee = leftFee - referralFee;
                 const sellFee = price - protocolFee - leftFee;
 
-                expect((creatorBeforeBalance + subjectFee)).to.equal(creatorAfterBalance);
+                expect((neverFadePointsBeforeBalance + subjectFee)).to.equal(neverFadePointsAfterBalance);
                 expect((userThreeBeforeBalance - gasEth + sellFee)).to.equal(userThreeAfterBalance);
                 expect((userTwoBeforeBalance + referralFee)).to.equal(userTwoAfterBalance);
                 expect((feeAddressBeforeBalance + protocolFee)).to.equal(feeAddressAfterBalance);
@@ -212,7 +213,7 @@ makeSuiteCleanRoom('Sell Item', function () {
                 const userTwoBeforeBalance = await ethers.provider.getBalance(userTwoAddress);
                 const userBeforeBalance = await ethers.provider.getBalance(userAddress);
                 const feeAddressBeforeBalance = await ethers.provider.getBalance(feeProtocolAddress);
-                const creatorBeforeBalance = await ethers.provider.getBalance(governanceAddress);
+                const neverFadePointsBeforeBalance = await ethers.provider.getBalance(neverFadePointsAddress);
 
                 const price = await bondCurveModule.connect(user).getSellPrice(2, sellAmount);
                 const txResp = await neverFadeHub.connect(user).sellItem({
@@ -228,13 +229,13 @@ makeSuiteCleanRoom('Sell Item', function () {
                 const userTwoAfterBalance = await ethers.provider.getBalance(userTwoAddress);
                 const userAfterBalance = await ethers.provider.getBalance(userAddress);
                 const feeAddressAfterBalance = await ethers.provider.getBalance(feeProtocolAddress);
-                const creatorAfterBalance = await ethers.provider.getBalance(governanceAddress);
+                const neverFadePointsAfterBalance = await ethers.provider.getBalance(neverFadePointsAddress);
 
                 const feeStr = await bondCurveModule.connect(user).getFeePercent();
                 const config = await bondCurveModule.connect(user).getItemConfig(2);
                 const feePercentage = feeStr[0];
                 const itemPercentage = feeStr[1];
-                const referralPercentage = config[2];
+                const referralPercentage = config[3];
                 
                 const protocolFee = price * feePercentage / BigInt(10000);
                 const leftFee = price * itemPercentage / BigInt(10000);
@@ -242,7 +243,7 @@ makeSuiteCleanRoom('Sell Item', function () {
                 const subjectFee = leftFee - referralFee;
                 const sellFee = price - protocolFee - leftFee;
 
-                expect((creatorBeforeBalance + subjectFee)).to.equal(creatorAfterBalance);
+                expect((neverFadePointsBeforeBalance + subjectFee)).to.equal(neverFadePointsAfterBalance);
                 expect((userBeforeBalance - gasEth + sellFee)).to.equal(userAfterBalance);
                 expect((userTwoBeforeBalance + referralFee)).to.equal(userTwoAfterBalance);
                 expect((feeAddressBeforeBalance + protocolFee)).to.equal(feeAddressAfterBalance);

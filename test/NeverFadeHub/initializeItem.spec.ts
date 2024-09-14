@@ -87,13 +87,12 @@ makeSuiteCleanRoom('Initialize Item', function () {
             });
 
             it('User should fail to initialize item if remove const curve from whitelist.',   async function () {
-                await expect(neverFadeHub.connect(governance).whitelistCurveModule(constCurveModuleAddress,false)).to.not.be.reverted;
+                await expect(neverFadeHub.connect(governance).whitelistCurveModule([constCurveModuleAddress],false)).to.not.be.reverted;
                 await expect(neverFadeHub.connect(governance).initializeItemByGov({
                     curveModule:  constCurveModuleAddress,
                     curveModuleInitData: abiCoder.encode(['uint256','uint256'], [100000, 2000]),
                 })).to.be.revertedWithCustomError(neverFadeHub, ERRORS.CurveModuleNotWhitelisted);
             });
-
         })
 
         context('Scenarios', function () {
