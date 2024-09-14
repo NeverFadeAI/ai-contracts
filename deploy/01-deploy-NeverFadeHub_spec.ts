@@ -8,6 +8,7 @@ const deployFn: DeployFunction = async (hre) => {
 
   let deployerNonce = await ethers.provider.getTransactionCount(deployer);
   const neverFadePointsAddress = getCreateAddress({ from: deployer.address, nonce: deployerNonce + 2 })
+  console.log("neverFadePointsAddress: ", neverFadePointsAddress)
   
   const NeverFadeHub = await ethers.getContractFactory("NeverFadeHub");
   const proxy = await upgrades.deployProxy(NeverFadeHub, [deployer.address, deployer.address, neverFadePointsAddress]);

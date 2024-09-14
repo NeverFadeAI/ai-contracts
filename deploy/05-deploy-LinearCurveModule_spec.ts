@@ -6,7 +6,7 @@ import {
 
 const deployFn: DeployFunction = async (hre) => {
     
-  const NeverFadeHubAddress = "0xcD6f5Bf3894fe063DC3a2eC30269469B40d789Ef"
+  const NeverFadeHubAddress = "0x74483Cbff8De256ecBF958B12C560af081651fBD"
   
   await deployAndVerifyAndThen({
       hre,

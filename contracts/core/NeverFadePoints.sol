@@ -56,16 +56,16 @@ contract NeverFadePoints is ERC20 {
         _v3NonfungiblePositionManager = v3NonfungiblePositionManager;
         _teamAddress = teamAddress;
         _poolAddress = _createUniswapV3Pool(
-            250541448375047931186413,
-            25054144837504793118641380156960632
-        ); //initial uniswap pool for price 1eth = 100_000_000_000 * 10 ** 18 points token
+            792281625142643375935,
+            7922816251426433759354395033600000000
+        ); //initial uniswap pool for price 1eth = 10_000_000_000_000_000 * 10 ** 18 points token
     }
 
     function mint(address to) external payable onlyNeverFadeHub returns (bool) {
         if (msg.value == 0) revert NoMsgValue();
         if (_soldOut) return false;
 
-        uint256 amount = msg.value * 100_000_000_000;
+        uint256 amount = msg.value * 10_000_000_000_000_000;
         if (amount > _tokenLeftForNeverFade) {
             amount = _tokenLeftForNeverFade;
         }

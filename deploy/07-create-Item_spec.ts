@@ -4,7 +4,6 @@ import {
     NeverFadeHub__factory,
 } from '../typechain-types';
 import { ethers } from 'hardhat';
-import { abiCoder } from '../test/__setup.spec';
 
 const deployFn: DeployFunction = async (hre) => {
     const [deployer] = await ethers.getSigners();
@@ -19,6 +18,7 @@ const deployFn: DeployFunction = async (hre) => {
     const startPrice = ethers.parseEther("1");
     const referralRatio = 1000;
 
+    const abiCoder = ethers.AbiCoder.defaultAbiCoder();
     const tx = await nerverFadeHub.connect(deployer).initializeItemByGov({
         curveModule:  ConstCurveModuleAddress,
         curveModuleInitData: abiCoder.encode(['uint256','uint256'], [startPrice, referralRatio]),
@@ -35,6 +35,6 @@ const deployFn: DeployFunction = async (hre) => {
 }
 
 // This is kept during an upgrade. So no upgrade tag.
-deployFn.tags = ['CreteItem']
+deployFn.tags = ['CreateItem']
 
 export default deployFn
