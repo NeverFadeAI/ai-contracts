@@ -7,6 +7,7 @@ import {Errors} from "../../libraries/Errors.sol";
 
 struct QuadraticCurveData {
     uint256 startPrice;
+    uint256 square;
     uint256 multiplier;
     uint256 supply;
     uint256 referralRatio;
@@ -36,13 +37,18 @@ contract QuadraticCurveModule is ModuleBase, ICurveModule {
         uint256 itemIndex,
         bytes calldata data
     ) external override onlyNeverFadeHub returns (uint256) {
-        (uint256 startPrice, uint256 multiplier, uint256 referralRatio) = abi
-            .decode(data, (uint256, uint256, uint256));
+        (
+            uint256 startPrice,
+            uint256 square,
+            uint256 multiplier,
+            uint256 referralRatio
+        ) = abi.decode(data, (uint256, uint256, uint256, uint256));
 
         if (referralRatio > 10000) revert Errors.ReferralRatioTooHigh();
 
         _dataQuadraticCurveByItemAddress[itemIndex] = QuadraticCurveData(
             startPrice,
+            square,
             multiplier,
             0,
             referralRatio
@@ -62,6 +68,7 @@ contract QuadraticCurveModule is ModuleBase, ICurveModule {
     {
         uint256 price = _getPrice(
             _dataQuadraticCurveByItemAddress[itemIndex].startPrice,
+            _dataQuadraticCurveByItemAddress[itemIndex].square,
             _dataQuadraticCurveByItemAddress[itemIndex].multiplier,
             _dataQuadraticCurveByItemAddress[itemIndex].supply,
             amount
@@ -89,6 +96,7 @@ contract QuadraticCurveModule is ModuleBase, ICurveModule {
     {
         uint256 price = _getPrice(
             _dataQuadraticCurveByItemAddress[itemIndex].startPrice,
+            _dataQuadraticCurveByItemAddress[itemIndex].square,
             _dataQuadraticCurveByItemAddress[itemIndex].multiplier,
             _dataQuadraticCurveByItemAddress[itemIndex].supply - amount,
             amount
@@ -154,6 +162,7 @@ contract QuadraticCurveModule is ModuleBase, ICurveModule {
         return
             _getPrice(
                 _dataQuadraticCurveByItemAddress[itemIndex].startPrice,
+                _dataQuadraticCurveByItemAddress[itemIndex].square,
                 _dataQuadraticCurveByItemAddress[itemIndex].multiplier,
                 _dataQuadraticCurveByItemAddress[itemIndex].supply,
                 amount
@@ -167,6 +176,7 @@ contract QuadraticCurveModule is ModuleBase, ICurveModule {
     ) external view override returns (uint256) {
         uint256 price = _getPrice(
             _dataQuadraticCurveByItemAddress[itemIndex].startPrice,
+            _dataQuadraticCurveByItemAddress[itemIndex].square,
             _dataQuadraticCurveByItemAddress[itemIndex].multiplier,
             _dataQuadraticCurveByItemAddress[itemIndex].supply,
             amount
@@ -188,6 +198,7 @@ contract QuadraticCurveModule is ModuleBase, ICurveModule {
             return
                 _getPrice(
                     _dataQuadraticCurveByItemAddress[itemIndex].startPrice,
+                    _dataQuadraticCurveByItemAddress[itemIndex].square,
                     _dataQuadraticCurveByItemAddress[itemIndex].multiplier,
                     _dataQuadraticCurveByItemAddress[itemIndex].supply - amount,
                     amount
@@ -202,6 +213,7 @@ contract QuadraticCurveModule is ModuleBase, ICurveModule {
         if (amount == 0) return 0;
         uint256 price = _getPrice(
             _dataQuadraticCurveByItemAddress[itemIndex].startPrice,
+            _dataQuadraticCurveByItemAddress[itemIndex].square,
             _dataQuadraticCurveByItemAddress[itemIndex].multiplier,
             _dataQuadraticCurveByItemAddress[itemIndex].supply - amount,
             amount
@@ -219,7 +231,7 @@ contract QuadraticCurveModule is ModuleBase, ICurveModule {
     ) external view override returns (uint256, uint256, uint256) {
         return (
             _dataQuadraticCurveByItemAddress[itemIndex].startPrice,
-            _dataQuadraticCurveByItemAddress[itemIndex].multiplier,
+            _dataQuadraticCurveByItemAddress[itemIndex].square,
             _dataQuadraticCurveByItemAddress[itemIndex].referralRatio
         );
     }
@@ -231,6 +243,7 @@ contract QuadraticCurveModule is ModuleBase, ICurveModule {
 
     function _getPrice(
         uint256 startPrice,
+        uint256 square,
         uint256 multiplier,
         uint256 supply,
         uint256 amount
@@ -240,10 +253,19 @@ contract QuadraticCurveModule is ModuleBase, ICurveModule {
         uint256 sum1 = supply == 0
             ? 0
             : supply * (supply - 1) * (2 * supply - 1);
+
         uint256 sum2 = (supply + amount) *
             (supply + amount - 1) *
             (2 * (supply + amount) - 1);
 
-        return amount * startPrice + (multiplier * (sum2 - sum1)) / 6;
+        uint256 linearSum = (amount * (2 * supply + amount - 1)) / 2;
+
+        return
+            amount *
+            startPrice +
+            (square * (sum2 - sum1)) /
+            6 +
+            multiplier *
+            linearSum;
     }
 }

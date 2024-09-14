@@ -68,7 +68,7 @@ makeSuiteCleanRoom('Initialize Item', function () {
             it('User should fail to initialize item if referralRatio too high when choice Bonding Curve.',   async function () {
                 await expect(neverFadeHub.connect(governance).initializeItemByGov({
                     curveModule:  bondCurveModuleAddress,
-                    curveModuleInitData: abiCoder.encode(['uint256', 'uint256', 'uint256'], [1000, 1000, 10001]), 
+                    curveModuleInitData: abiCoder.encode(['uint256', 'uint256', 'uint256', 'uint256'], [1000, 1000, 1000, 10001]), 
                 })).to.be.revertedWithCustomError(bondCurveModule, ERRORS.ReferralRatioTooHigh);
             });
 
@@ -82,7 +82,7 @@ makeSuiteCleanRoom('Initialize Item', function () {
             it('User should fail to bondCurve item if use invalid initial data format.',   async function () {
                 await expect(neverFadeHub.connect(governance).initializeItemByGov({
                     curveModule:  bondCurveModuleAddress,
-                    curveModuleInitData: abiCoder.encode(['uint256', 'uint256', 'bool'], [1000, 1000, true]), 
+                    curveModuleInitData: abiCoder.encode(['uint256', 'uint256', 'uint256', 'bool'], [1000, 1000, 1000, true]), 
                 })).to.be.revertedWithoutReason;
             });
 
@@ -118,7 +118,7 @@ makeSuiteCleanRoom('Initialize Item', function () {
             it('Get correct variable if initialize item with bonding curve success.',   async function () {
                 await expect(neverFadeHub.connect(governance).initializeItemByGov({
                     curveModule:  bondCurveModuleAddress,
-                    curveModuleInitData: abiCoder.encode(['uint256', 'uint256', 'uint256'], [1000, 1000, 5000]),
+                    curveModuleInitData: abiCoder.encode(['uint256', 'uint256', 'uint256', 'uint256'], [1000, 1000, 1000, 5000]),
                 })).to.be.not.reverted;
                 expect(await neverFadeHub.connect(governance).getCurveModuleAddress(0)).to.equal(bondCurveModuleAddress)
                 expect(await neverFadeHub.connect(governance).getSupply(0)).to.equal(0)

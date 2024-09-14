@@ -29,8 +29,9 @@ makeSuiteCleanRoom('Sell Item', function () {
     context('Generic', function () {
 
         beforeEach(async function () {
-            const multipier = ethers.parseEther("0.1");
-            const startPrice = ethers.parseEther("1");
+            const square = ethers.parseEther("0.0001");
+            const multipier = ethers.parseEther("1");
+            const startPrice = ethers.parseEther("20");
             await expect(neverFadeHub.connect(governance).initializeItemByGov({
                 curveModule:  constCurveModuleAddress,
                 curveModuleInitData: abiCoder.encode(['uint256','uint256'], [startPrice, 1000]),
@@ -43,7 +44,7 @@ makeSuiteCleanRoom('Sell Item', function () {
 
             await expect(neverFadeHub.connect(governance).initializeItemByGov({
                 curveModule:  bondCurveModuleAddress,
-                curveModuleInitData: abiCoder.encode(['uint256', 'uint256', 'uint256'], [startPrice, multipier, 3000]),
+                curveModuleInitData: abiCoder.encode(['uint256', 'uint256', 'uint256', 'uint256'], [startPrice, square, multipier, 3000]),
             })).to.be.not.reverted;
 
             const price = await constCurveModule.connect(governance).getBuyPrice(0, buyAmount);
