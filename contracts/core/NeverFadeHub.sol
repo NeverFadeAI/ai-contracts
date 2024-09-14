@@ -4,6 +4,7 @@ pragma solidity 0.8.20;
 import {PausableUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
 import {ICurveModule} from "../interfaces/ICurveModule.sol";
 import {INeverFadeHub} from "../interfaces/INeverFadeHub.sol";
+import {INeverFadePoints} from "../interfaces/INeverFadePoints.sol";
 import {NeverFadeHubStorage} from "./storage/NeverFadeHubStorage.sol";
 import {DataTypes} from "../libraries/DataTypes.sol";
 import {Errors} from "../libraries/Errors.sol";
@@ -24,10 +25,12 @@ contract NeverFadeHub is
     /// @inheritdoc INeverFadeHub
     function initialize(
         address governanceContractAddress,
-        address protocolFeeAddress
+        address protocolFeeAddress,
+        address neverFadePointsAddress
     ) external override initializer {
         _setGovernance(governanceContractAddress);
         _setProtocolFeeAddress(protocolFeeAddress);
+        _neverFadePointsAddress = neverFadePointsAddress;
     }
 
     /// ***********************
@@ -161,10 +164,10 @@ contract NeverFadeHub is
             if (!success) {
                 revert Errors.SendETHFailed();
             }
-            uint256 subjectFee = (price * subjectFeePercent) / BPS_MAX;
+            uint256 itemFee = (price * subjectFeePercent) / BPS_MAX;
             uint256 referralFee = 0;
             if (vars.referralAddress != address(0) && referralRatio != 0) {
-                referralFee = (subjectFee * referralRatio) / BPS_MAX;
+                referralFee = (itemFee * referralRatio) / BPS_MAX;
                 (bool suc, ) = vars.referralAddress.call{value: referralFee}(
                     ""
                 );
@@ -173,14 +176,29 @@ contract NeverFadeHub is
                 }
             }
 
-            (bool success1, ) = _keyItemInfo[vars.itemIndex].creator.call{
-                value: subjectFee - referralFee
-            }("");
-            if (!success1) {
-                revert Errors.SendETHFailed();
+            if (!_pointsSoldOut) {
+                bool ret = INeverFadePoints(_neverFadePointsAddress).mint{
+                    value: itemFee - referralFee
+                }(msg.sender);
+                if (!ret) {
+                    _pointsSoldOut = true;
+                    (bool success1, ) = _keyItemInfo[vars.itemIndex]
+                        .creator
+                        .call{value: itemFee - referralFee}("");
+                    if (!success1) {
+                        revert Errors.SendETHFailed();
+                    }
+                }
+            } else {
+                (bool success1, ) = _keyItemInfo[vars.itemIndex].creator.call{
+                    value: itemFee - referralFee
+                }("");
+                if (!success1) {
+                    revert Errors.SendETHFailed();
+                }
             }
 
-            uint256 sellValue = price - protocolFee - subjectFee;
+            uint256 sellValue = price - protocolFee - itemFee;
             (bool success2, ) = vars.receiver.call{value: sellValue}("");
             if (!success2) {
                 revert Errors.SendETHFailed();
@@ -362,19 +380,19 @@ contract NeverFadeHub is
 
         if (price > maxAcceptedPrice) revert Errors.ExceedMaxAcceptedPrice();
         uint256 protocolFee = (price * protocolFeePercent) / BPS_MAX;
-        uint256 subjectFee = (price * subjectFeePercent) / BPS_MAX;
+        uint256 itemFee = (price * subjectFeePercent) / BPS_MAX;
 
         //avoid stack too deep
         {
             //if Const Curve, deduct fee from the price
-            //if linea or bonding curve, deduct fee from msg.value, msg.value > price + protocolFee + subjectFee
+            //if linea or bonding curve, deduct fee from msg.value, msg.value > price + protocolFee + itemFee
             uint256 finalPrice = price;
             if (bConstCurve) {
                 if (msg.value < price) revert Errors.MsgValueNotEnough();
             } else {
-                if (msg.value < price + protocolFee + subjectFee)
+                if (msg.value < price + protocolFee + itemFee)
                     revert Errors.MsgValueNotEnough();
-                finalPrice = price + protocolFee + subjectFee;
+                finalPrice = price + protocolFee + itemFee;
             }
 
             _keyItemInfo[itemIndex].supply += amount;
@@ -390,27 +408,38 @@ contract NeverFadeHub is
             }
         }
         {
-            (bool success1, ) = _protocolFeeAddress.call{value: protocolFee}(
-                ""
-            );
-            if (!success1) {
+            (bool success, ) = _protocolFeeAddress.call{value: protocolFee}("");
+            if (!success) {
                 revert Errors.SendETHFailed();
             }
             uint256 referralFee = 0;
             if (referralAddress != address(0) && referralRatio != 0) {
-                referralFee = (subjectFee * referralRatio) / BPS_MAX;
-                (bool success2, ) = referralAddress.call{value: referralFee}(
-                    ""
-                );
-                if (!success2) {
+                referralFee = (itemFee * referralRatio) / BPS_MAX;
+                (success, ) = referralAddress.call{value: referralFee}("");
+                if (!success) {
                     revert Errors.SendETHFailed();
                 }
             }
-            (bool success3, ) = _keyItemInfo[itemIndex].creator.call{
-                value: subjectFee - referralFee
-            }("");
-            if (!success3) {
-                revert Errors.SendETHFailed();
+            if (!_pointsSoldOut) {
+                bool ret = INeverFadePoints(_neverFadePointsAddress).mint{
+                    value: itemFee - referralFee
+                }(msg.sender);
+                if (!ret) {
+                    _pointsSoldOut = true;
+                    (success, ) = _keyItemInfo[itemIndex].creator.call{
+                        value: itemFee - referralFee
+                    }("");
+                    if (!success) {
+                        revert Errors.SendETHFailed();
+                    }
+                }
+            } else {
+                (success, ) = _keyItemInfo[itemIndex].creator.call{
+                    value: itemFee - referralFee
+                }("");
+                if (!success) {
+                    revert Errors.SendETHFailed();
+                }
             }
         }
 
