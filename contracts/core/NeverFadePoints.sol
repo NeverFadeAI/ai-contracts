@@ -14,11 +14,12 @@ contract NeverFadePoints is ERC20 {
     address immutable NEVER_FADE_HUB;
     address immutable _v3NonfungiblePositionManager;
 
-    uint256 public constant MAX_SUPPLY = 10_000_000_000_000 * 10 ** 18;
-    uint256 public constant TEAM_RESERVER = 1_000_000_000_000 * 10 ** 18; //10%
-    uint256 public constant LP_RESERVER = 4_500_000_000_000 * 10 ** 18; //45%
-    uint256 public _tokenLeftForNeverFade = 4_500_000_000_000 * 10 ** 18; //45% for NeverFadeHub, 45% for LP and raise for 450 eth
+    uint256 public constant MAX_SUPPLY = 100_000_000_000_000 * 10 ** 18;
+    uint256 public constant TEAM_RESERVE = 10_000_000_000_000 * 10 ** 18; //10%
+    uint256 public constant LP_RESERVE = 45_000_000_000_000 * 10 ** 18; //45%
+    uint256 public _tokenLeftForNeverFade = 45_000_000_000_000 * 10 ** 18; //45% for NeverFadeHub, 45% for LP and raise for 450 eth
     bool public _canTransfer = false;
+    bool public _soldOut = false;
     address public _poolAddress;
     address public _teamAddress;
 
@@ -50,29 +51,23 @@ contract NeverFadePoints is ERC20 {
             revert InvalidAddress();
         }
         NEVER_FADE_HUB = neverFadeHub;
-        _mint(address(this), LP_RESERVER); //mint 45% token into this contract for LP
+        _mint(address(this), LP_RESERVE); //mint 45% token into this contract for LP
 
         _v3NonfungiblePositionManager = v3NonfungiblePositionManager;
         _teamAddress = teamAddress;
         _poolAddress = _createUniswapV3Pool(
-            792281625142643375935439,
-            7922816251426433759354395033600000
-        ); //initial uniswap pool for price 1eth = 10_000_000_000 points token
+            250541448375047931186413,
+            25054144837504793118641380156960632
+        ); //initial uniswap pool for price 1eth = 100_000_000_000 * 10 ** 18 points token
     }
 
     function mint(address to) external payable onlyNeverFadeHub returns (bool) {
         if (msg.value == 0) revert NoMsgValue();
-        if (_canTransfer) return false;
+        if (_soldOut) return false;
 
-        uint256 amount = msg.value * 10_000_000_000;
+        uint256 amount = msg.value * 100_000_000_000;
         if (amount > _tokenLeftForNeverFade) {
             amount = _tokenLeftForNeverFade;
-            (bool suc, ) = payable(to).call{
-                value: msg.value - amount / 10_000_000_000
-            }("");
-            if (!suc) {
-                revert SendETHFailed();
-            }
         }
         _tokenLeftForNeverFade -= amount;
         _mint(to, amount);
@@ -148,8 +143,8 @@ contract NeverFadePoints is ERC20 {
                         fee: uint24(10_000),
                         tickLower: int24(-887200),
                         tickUpper: int24(887200),
-                        amount0Desired: zeroForOne ? LP_RESERVER : ethValue,
-                        amount1Desired: zeroForOne ? ethValue : LP_RESERVER,
+                        amount0Desired: zeroForOne ? LP_RESERVE : ethValue,
+                        amount1Desired: zeroForOne ? ethValue : LP_RESERVE,
                         amount0Min: 0,
                         amount1Min: 0,
                         recipient: address(0),
@@ -180,6 +175,7 @@ contract NeverFadePoints is ERC20 {
             }
         }
         _canTransfer = true; // allow transfer token
-        _mint(_teamAddress, TEAM_RESERVER); // mint 10% token for team
+        _soldOut = true;
+        _mint(_teamAddress, TEAM_RESERVE); // mint 10% token for team
     }
 }
