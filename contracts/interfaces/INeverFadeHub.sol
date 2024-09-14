@@ -42,10 +42,13 @@ interface INeverFadeHub {
     /**
      * @notice set whitelist curve module address
      *
-     * @param curveModule address of curve contract
+     * @param curveModules address array of curve contract
      * @param whitelist whitelist or not
      */
-    function whitelistCurveModule(address curveModule, bool whitelist) external;
+    function whitelistCurveModule(
+        address[] calldata curveModules,
+        bool whitelist
+    ) external;
 
     /**
      * @notice change fee percentage of curve contract

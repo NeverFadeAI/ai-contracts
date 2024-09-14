@@ -51,10 +51,10 @@ contract NeverFadeHub is
 
     /// @inheritdoc INeverFadeHub
     function whitelistCurveModule(
-        address curveModule,
+        address[] calldata curveModules,
         bool whitelist
     ) external override onlyGov {
-        _whitelistCurveModule(curveModule, whitelist);
+        _whitelistCurveModule(curveModules, whitelist);
     }
 
     /// @inheritdoc INeverFadeHub
@@ -508,14 +508,16 @@ contract NeverFadeHub is
     }
 
     function _whitelistCurveModule(
-        address curveModule,
+        address[] calldata curveModules,
         bool whitelist
     ) internal {
-        _curveModuleWhitelisted[curveModule] = whitelist;
-        emit Events.CurveModuleWhitelisted(
-            curveModule,
-            whitelist,
-            block.timestamp
-        );
+        for (uint256 i = 0; i < curveModules.length; i++) {
+            _curveModuleWhitelisted[curveModules[i]] = whitelist;
+            emit Events.CurveModuleWhitelisted(
+                curveModules[i],
+                whitelist,
+                block.timestamp
+            );
+        }
     }
 }

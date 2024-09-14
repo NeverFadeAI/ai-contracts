@@ -35,6 +35,6 @@ const deployFn: DeployFunction = async (hre) => {
 }
 
 // This is kept during an upgrade. So no upgrade tag.
-deployFn.tags = ['PreEnv']
+deployFn.tags = ['CreteItem']
 
 export default deployFn

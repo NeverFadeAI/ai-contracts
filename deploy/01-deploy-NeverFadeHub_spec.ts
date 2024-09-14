@@ -1,12 +1,16 @@
 /* Imports: Internal */
 import { DeployFunction } from 'hardhat-deploy/dist/types'
 import { ethers, upgrades } from 'hardhat';
+import { getCreateAddress } from "ethers"
 
 const deployFn: DeployFunction = async (hre) => {
   const [ deployer ] = await ethers.getSigners();
 
+  let deployerNonce = await ethers.provider.getTransactionCount(deployer);
+  const neverFadePointsAddress = getCreateAddress({ from: deployer.address, nonce: deployerNonce + 2 })
+  
   const NeverFadeHub = await ethers.getContractFactory("NeverFadeHub");
-  const proxy = await upgrades.deployProxy(NeverFadeHub, [deployer.address, deployer.address]);
+  const proxy = await upgrades.deployProxy(NeverFadeHub, [deployer.address, deployer.address, neverFadePointsAddress]);
   await proxy.waitForDeployment()
   
   const proxyAddress = await proxy.getAddress()
