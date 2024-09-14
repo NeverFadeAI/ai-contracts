@@ -109,7 +109,7 @@ interface ICurveModule {
      */
     function getItemConfig(
         uint256 itemIndex
-    ) external view returns (uint256, uint256, uint256);
+    ) external view returns (uint256, uint256, uint256, uint256);
 
     /**
      * @notice get the price of sell amount key

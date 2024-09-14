@@ -228,10 +228,11 @@ contract QuadraticCurveModule is ModuleBase, ICurveModule {
     /// @inheritdoc ICurveModule
     function getItemConfig(
         uint256 itemIndex
-    ) external view override returns (uint256, uint256, uint256) {
+    ) external view override returns (uint256, uint256, uint256, uint256) {
         return (
             _dataQuadraticCurveByItemAddress[itemIndex].startPrice,
             _dataQuadraticCurveByItemAddress[itemIndex].square,
+            _dataQuadraticCurveByItemAddress[itemIndex].multiplier,
             _dataQuadraticCurveByItemAddress[itemIndex].referralRatio
         );
     }

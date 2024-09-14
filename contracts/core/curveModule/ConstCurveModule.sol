@@ -145,10 +145,11 @@ contract ConstCurveModule is ModuleBase, ICurveModule {
     /// @inheritdoc ICurveModule
     function getItemConfig(
         uint256 itemIndex
-    ) external view override returns (uint256, uint256, uint256) {
+    ) external view override returns (uint256, uint256, uint256, uint256) {
         return (
             _dataConstCurveByItemAddress[itemIndex].price,
-            1,
+            0,
+            0,
             _dataConstCurveByItemAddress[itemIndex].referralRatio
         );
     }

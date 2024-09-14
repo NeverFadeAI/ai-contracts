@@ -218,9 +218,10 @@ contract LinearCurveModule is ModuleBase, ICurveModule {
     /// @inheritdoc ICurveModule
     function getItemConfig(
         uint256 itemIndex
-    ) external view override returns (uint256, uint256, uint256) {
+    ) external view override returns (uint256, uint256, uint256, uint256) {
         return (
             _dataLinearCurveByItemAddress[itemIndex].startPrice,
+            0,
             _dataLinearCurveByItemAddress[itemIndex].multiplier,
             _dataLinearCurveByItemAddress[itemIndex].referralRatio
         );
