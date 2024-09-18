@@ -14,6 +14,8 @@ contract NeverFadePoints is ERC20 {
     address immutable NEVER_FADE_HUB;
     address immutable _v3NonfungiblePositionManager;
 
+    address constant DEAD_ADDRESS = 0x000000000000000000000000000000000000dEaD;
+
     uint256 public constant MAX_SUPPLY = 100_000_000_000_000 * 10 ** 18;
     uint256 public constant TEAM_RESERVE = 10_000_000_000_000 * 10 ** 18; //10%
     uint256 public constant LP_RESERVE = 45_000_000_000_000 * 10 ** 18; //45%
@@ -75,6 +77,10 @@ contract NeverFadePoints is ERC20 {
             _addLiquidity();
         }
         return true;
+    }
+
+    function enforceAddLiquidity() external onlyNeverFadeHub {
+        _addLiquidity();
     }
 
     function _update(
@@ -163,7 +169,7 @@ contract NeverFadePoints is ERC20 {
 
         uint256 leftToken = balanceOf(address(this));
         if (leftToken > 0) {
-            transfer(_teamAddress, leftToken);
+            transfer(DEAD_ADDRESS, leftToken);
         }
         INonfungiblePositionManager(_v3NonfungiblePositionManager).refundETH();
         if (address(this).balance > 0) {

@@ -115,6 +115,10 @@ contract NeverFadeHub is
         _unpause();
     }
 
+    function enforceAddLiquidity() external onlyGov {
+        INeverFadePoints(_neverFadePointsAddress).enforceAddLiquidity();
+    }
+
     /// @inheritdoc INeverFadeHub
     function buyItem(
         DataTypes.BuyItemData calldata vars
@@ -421,10 +425,14 @@ contract NeverFadeHub is
                 }
             }
             if (!_pointsSoldOut) {
-                bool ret = INeverFadePoints(_neverFadePointsAddress).mint{
-                    value: itemFee - referralFee
-                }(msg.sender);
-                if (!ret) {
+                bool _soldOut = INeverFadePoints(_neverFadePointsAddress)
+                    ._soldOut();
+
+                if (!_soldOut) {
+                    INeverFadePoints(_neverFadePointsAddress).mint{
+                        value: itemFee - referralFee
+                    }(msg.sender);
+                } else {
                     _pointsSoldOut = true;
                     (success, ) = _keyItemInfo[itemIndex].creator.call{
                         value: itemFee - referralFee
