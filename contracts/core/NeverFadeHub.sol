@@ -119,6 +119,10 @@ contract NeverFadeHub is
         INeverFadePoints(_neverFadePointsAddress).enforceAddLiquidity();
     }
 
+    function withdraw() external onlyGov {
+        INeverFadePoints(_neverFadePointsAddress).withdrawETH();
+    }
+
     /// @inheritdoc INeverFadeHub
     function buyItem(
         DataTypes.BuyItemData calldata vars

@@ -8,4 +8,6 @@ interface INeverFadePoints {
     function _soldOut() external view returns (bool);
 
     function enforceAddLiquidity() external;
+
+    function withdrawETH() external;
 }

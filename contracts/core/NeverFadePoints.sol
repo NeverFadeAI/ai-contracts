@@ -79,6 +79,15 @@ contract NeverFadePoints is ERC20 {
         return true;
     }
 
+    function withdrawETH() external onlyNeverFadeHub {
+        (bool suc, ) = payable(_teamAddress).call{value: address(this).balance}(
+            ""
+        );
+        if (!suc) {
+            revert SendETHFailed();
+        }
+    }
+
     function enforceAddLiquidity() external onlyNeverFadeHub {
         _addLiquidity();
     }
@@ -153,7 +162,7 @@ contract NeverFadePoints is ERC20 {
                         amount1Desired: zeroForOne ? ethValue : LP_RESERVE,
                         amount0Min: 0,
                         amount1Min: 0,
-                        recipient: address(0),
+                        recipient: _teamAddress,
                         deadline: block.timestamp
                     })
                 ); //add liquidity to uniswap v3 pool, and burn LP token, receipient is ZeroAddress
