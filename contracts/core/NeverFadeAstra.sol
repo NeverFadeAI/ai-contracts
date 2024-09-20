@@ -3,7 +3,7 @@ pragma solidity 0.8.20;
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import {INonfungiblePositionManager} from "../interfaces/INonfungiblePositionManager.sol";
 
-contract NeverFadePoints is ERC20 {
+contract NeverFadeAstra is ERC20 {
     error NotNeverFadeHub();
     error NoMsgValue();
     error SendETHFailed();
