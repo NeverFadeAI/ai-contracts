@@ -18,7 +18,7 @@ interface INeverFadeHub {
     function initialize(
         address governanceContractAddress,
         address protocolFeeAddress,
-        address neverFadePointsAddress
+        address neverFadeAstraAddress
     ) external;
 
     /// ***********************

@@ -2,7 +2,7 @@
 
 pragma solidity 0.8.20;
 
-interface INeverFadePoints {
+interface INeverFadeAstra {
     function mint(address to) external payable returns (bool);
 
     function _soldOut() external view returns (bool);

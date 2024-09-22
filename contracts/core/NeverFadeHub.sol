@@ -4,7 +4,7 @@ pragma solidity 0.8.20;
 import {PausableUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
 import {ICurveModule} from "../interfaces/ICurveModule.sol";
 import {INeverFadeHub} from "../interfaces/INeverFadeHub.sol";
-import {INeverFadePoints} from "../interfaces/INeverFadePoints.sol";
+import {INeverFadeAstra} from "../interfaces/INeverFadeAstra.sol";
 import {NeverFadeHubStorage} from "./storage/NeverFadeHubStorage.sol";
 import {DataTypes} from "../libraries/DataTypes.sol";
 import {Errors} from "../libraries/Errors.sol";
@@ -30,7 +30,7 @@ contract NeverFadeHub is
     ) external override initializer {
         _setGovernance(governanceContractAddress);
         _setProtocolFeeAddress(protocolFeeAddress);
-        _neverFadePointsAddress = neverFadePointsAddress;
+        _neverFadeAstraAddress = neverFadePointsAddress;
     }
 
     /// ***********************
@@ -116,11 +116,11 @@ contract NeverFadeHub is
     }
 
     function enforceAddLiquidity() external onlyGov {
-        INeverFadePoints(_neverFadePointsAddress).enforceAddLiquidity();
+        INeverFadeAstra(_neverFadeAstraAddress).enforceAddLiquidity();
     }
 
     function withdraw() external onlyGov {
-        INeverFadePoints(_neverFadePointsAddress).withdrawETH();
+        INeverFadeAstra(_neverFadeAstraAddress).withdrawETH();
     }
 
     /// @inheritdoc INeverFadeHub
@@ -185,7 +185,7 @@ contract NeverFadeHub is
             }
 
             if (!_pointsSoldOut) {
-                bool ret = INeverFadePoints(_neverFadePointsAddress).mint{
+                bool ret = INeverFadeAstra(_neverFadeAstraAddress).mint{
                     value: itemFee - referralFee
                 }(msg.sender);
                 if (!ret) {
@@ -429,11 +429,11 @@ contract NeverFadeHub is
                 }
             }
             if (!_pointsSoldOut) {
-                bool _soldOut = INeverFadePoints(_neverFadePointsAddress)
+                bool _soldOut = INeverFadeAstra(_neverFadeAstraAddress)
                     ._soldOut();
 
                 if (!_soldOut) {
-                    INeverFadePoints(_neverFadePointsAddress).mint{
+                    INeverFadeAstra(_neverFadeAstraAddress).mint{
                         value: itemFee - referralFee
                     }(msg.sender);
                 } else {

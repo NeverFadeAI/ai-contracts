@@ -26,6 +26,6 @@ abstract contract NeverFadeHubStorage {
     //governance address
     address public _governance;
 
-    address public _neverFadePointsAddress;
+    address public _neverFadeAstraAddress;
     bool public _pointsSoldOut;
 }
