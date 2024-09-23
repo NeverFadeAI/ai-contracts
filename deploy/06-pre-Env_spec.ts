@@ -7,10 +7,10 @@ import { ethers } from 'hardhat';
 
 const deployFn: DeployFunction = async (hre) => {
     const [deployer] = await ethers.getSigners();
-    const NeverFadeHubAddress = "0x74483Cbff8De256ecBF958B12C560af081651fBD"
-    const ConstCurveModuleAddress = "0x0878595252ad939dF3451c13ee5BDb5bE5ee4298"
-    const LinearCurveModuleAddress = "0x7F0BA00a7620A95B9cb9E6eC94722dba242AaCd6"
-    const QuadraticCurveModuleAddress= "0x098fD682a7fC7716e4B8DF2dD89D5aEd7DD7d1e4"
+    const NeverFadeHubAddress = "0x27E93060CC304Ed56Ed49aE1f776382B62f94E95"
+    const ConstCurveModuleAddress = "0xf8361c3408D8D2A3823F1fC6Dc5168F4AB10a7bF"
+    const LinearCurveModuleAddress = "0x550C539ad4c0653300Dc4a979BAbe6A102660d18"
+    const QuadraticCurveModuleAddress= "0xC20B3E81f613b4461f71D47eF7746dfAcccdb3A9"
 
     const nerverFadeHub = NeverFadeHub__factory.connect(NeverFadeHubAddress)
     const tx = await nerverFadeHub.connect(deployer).whitelistCurveModule([ConstCurveModuleAddress, LinearCurveModuleAddress, QuadraticCurveModuleAddress], true)

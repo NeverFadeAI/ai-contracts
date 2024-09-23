@@ -7,30 +7,31 @@ import { ethers } from 'hardhat';
 
 const deployFn: DeployFunction = async (hre) => {
     const [deployer] = await ethers.getSigners();
-    const NeverFadeHubAddress = "0x3f7210986b68A16E1d4f0C8E58eBabf82f0f4363"
+    const NeverFadeHubAddress = "0x27E93060CC304Ed56Ed49aE1f776382B62f94E95"
+    const ConstCurveModuleAddress = "0xf8361c3408D8D2A3823F1fC6Dc5168F4AB10a7bF"
+    const LinearCurveModuleAddress = "0x550C539ad4c0653300Dc4a979BAbe6A102660d18"
+    const QuadraticCurveModuleAddress= "0xC20B3E81f613b4461f71D47eF7746dfAcccdb3A9"
 
     const nerverFadeHub = NeverFadeHub__factory.connect(NeverFadeHubAddress)
-    const ConstCurveModuleAddress = "0xe0441a9f317d73aeB99252cc5041D481Cd68c935"
-    const LinearCurveModuleAddress = "0xFaE63D983d2a16F835be4fb067e0A9E0CBBEe9b7"
-    const QuadraticCurveModuleAddress = "0xF05EEEdEB727fD732de1D1313443dA8aAfe41bD4"
     
-    const multipier = ethers.parseEther("0.1");
-    const startPrice = ethers.parseEther("1");
-    const referralRatio = 1000;
+    const square = ethers.parseEther("0.0000000004");
+    const multipier = ethers.parseEther("0.00004");
+    const startPrice = ethers.parseEther("0.001");
+    const referralRatio = 3333;
 
     const abiCoder = ethers.AbiCoder.defaultAbiCoder();
-    const tx = await nerverFadeHub.connect(deployer).initializeItemByGov({
-        curveModule:  ConstCurveModuleAddress,
-        curveModuleInitData: abiCoder.encode(['uint256','uint256'], [startPrice, referralRatio]),
-    })
+    // const tx = await nerverFadeHub.connect(deployer).initializeItemByGov({
+    //     curveModule:  ConstCurveModuleAddress,
+    //     curveModuleInitData: abiCoder.encode(['uint256','uint256'], [startPrice, referralRatio]),
+    // })
     // const tx = await nerverFadeHub.connect(deployer).initializeItemByGov({
     //     curveModule:  LinearCurveModuleAddress,
     //     curveModuleInitData: abiCoder.encode(['uint256','uint256','uint256'], [startPrice, multipier, referralRatio]),
     // })
-    // const tx = await nerverFadeHub.connect(deployer).initializeItemByGov({
-    //     curveModule:  QuadraticCurveModuleAddress,
-    //     curveModuleInitData: abiCoder.encode(['uint256','uint256','uint256'], [startPrice, multipier, referralRatio]),
-    // })
+    const tx = await nerverFadeHub.connect(deployer).initializeItemByGov({
+        curveModule:  QuadraticCurveModuleAddress,
+        curveModuleInitData: abiCoder.encode(['uint256','uint256','uint256','uint256'], [startPrice, square, multipier, referralRatio]),
+    })
     await tx.wait()
 }
 

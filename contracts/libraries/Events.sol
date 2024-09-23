@@ -64,4 +64,18 @@ library Events {
         uint256 supply,
         uint256 timestamp
     );
+
+    event ItemCreated(uint256 itemIndex, address creator, address curveModule);
+    event CurveFeePercentSet(
+        address curveModuleAddress,
+        uint256 newProtocolFeePercent,
+        uint256 feePercent
+    );
+    event CurveTransferableSet(address curveModuleAddress, bool transferable);
+    event ReferralRatioSet(uint256 itemIndex, uint256 newReferralRatio);
+    event ItemPriceSet(
+        uint256 itemIndex,
+        uint256 newPrice,
+        address curveModule
+    );
 }

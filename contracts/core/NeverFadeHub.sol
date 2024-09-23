@@ -26,11 +26,11 @@ contract NeverFadeHub is
     function initialize(
         address governanceContractAddress,
         address protocolFeeAddress,
-        address neverFadePointsAddress
+        address neverFadeAstraAddress
     ) external override initializer {
         _setGovernance(governanceContractAddress);
         _setProtocolFeeAddress(protocolFeeAddress);
-        _neverFadeAstraAddress = neverFadePointsAddress;
+        _neverFadeAstraAddress = neverFadeAstraAddress;
     }
 
     /// ***********************
@@ -80,6 +80,11 @@ contract NeverFadeHub is
             newProtocolFeePercent,
             newItemFeePercent
         );
+        emit Events.CurveFeePercentSet(
+            curveModuleAddress,
+            newProtocolFeePercent,
+            newItemFeePercent
+        );
     }
 
     function setCurveTransferable(
@@ -89,6 +94,7 @@ contract NeverFadeHub is
         if (!_curveModuleWhitelisted[curveModuleAddress])
             revert Errors.CurveModuleNotWhitelisted();
         ICurveModule(curveModuleAddress).setTransferable(transferable);
+        emit Events.CurveTransferableSet(curveModuleAddress, transferable);
     }
 
     /// @inheritdoc INeverFadeHub
@@ -105,6 +111,7 @@ contract NeverFadeHub is
             currentItemIndex,
             vars.curveModuleInitData
         );
+        emit Events.ItemCreated(currentItemIndex, msg.sender, vars.curveModule);
     }
 
     function adminPause() external onlyGov {
@@ -270,6 +277,7 @@ contract NeverFadeHub is
             itemIndex,
             newReferralRatio
         );
+        emit Events.ReferralRatioSet(itemIndex, newReferralRatio);
     }
 
     /// @inheritdoc INeverFadeHub
@@ -285,6 +293,11 @@ contract NeverFadeHub is
         ICurveModule(_keyItemInfo[itemIndex].curveModule).setItemPrice(
             itemIndex,
             newPrice
+        );
+        emit Events.ItemPriceSet(
+            itemIndex,
+            newPrice,
+            _keyItemInfo[itemIndex].curveModule
         );
     }
 
