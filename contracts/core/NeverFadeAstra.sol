@@ -56,18 +56,23 @@ contract NeverFadeAstra is ERC20 {
         _mint(address(this), LP_RESERVE); //mint 45% token into this contract for LP
 
         _v3NonfungiblePositionManager = v3NonfungiblePositionManager;
+        _approve(
+            address(this),
+            v3NonfungiblePositionManager,
+            type(uint256).max
+        );
         _teamAddress = teamAddress;
-        _poolAddress = _createUniswapV3Pool(
-            792281625142643375935,
-            7922816251426433759354395033600000000
-        ); //initial uniswap pool for price 1eth = 10_000_000_000_000_000 * 10 ** 18 points token
+        _createUniswapV3Pool(
+            3734851398319075994582,
+            1680683129243584197561958146823745152
+        ); //initial uniswap pool for price 1eth = 450_000_000_000_000 * 10 ** 18 points token
     }
 
     function mint(address to) external payable onlyNeverFadeHub returns (bool) {
         if (msg.value == 0) revert NoMsgValue();
         if (_soldOut) return false;
 
-        uint256 amount = msg.value * 10_000_000_000_000_000;
+        uint256 amount = msg.value * 450_000_000_000_000;
         if (amount > _tokenLeftForNeverFade) {
             amount = _tokenLeftForNeverFade;
         }
@@ -108,7 +113,7 @@ contract NeverFadeAstra is ERC20 {
     function _createUniswapV3Pool(
         uint160 sqrtPriceX96,
         uint160 sqrtPriceB96
-    ) private returns (address) {
+    ) private {
         address weth_ = INonfungiblePositionManager(
             _v3NonfungiblePositionManager
         ).WETH9();
@@ -118,7 +123,7 @@ contract NeverFadeAstra is ERC20 {
             ? (address(this), weth_, true)
             : (weth_, address(this), false);
 
-        address pool = INonfungiblePositionManager(
+        _poolAddress = INonfungiblePositionManager(
             _v3NonfungiblePositionManager
         ).createAndInitializePoolIfNecessary(
                 token0,
@@ -126,10 +131,9 @@ contract NeverFadeAstra is ERC20 {
                 uint24(10_000),
                 zeroForOne ? sqrtPriceX96 : sqrtPriceB96
             );
-        if (pool == address(0)) {
+        if (_poolAddress == address(0)) {
             revert CreatePairFailed();
         }
-        return pool;
     }
 
     function _addLiquidity() private {
